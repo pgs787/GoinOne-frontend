@@ -7,11 +7,11 @@ import styled from "styled-components";
 const SignupLayout = props => (
   <>
     <Header />
-    <Body>
-      <Main>
-        <Signupbox>{props.children}</Signupbox>
-      </Main>
-    </Body>
+    {/* <Body> */}
+    <Main>
+      <Signupbox>{props.children}</Signupbox>
+    </Main>
+    {/* </Body> */}
     <Footer />
   </>
 );
@@ -26,6 +26,6 @@ const Main = styled.div`
 `;
 
 const Signupbox = styled.div`
-  margin: 0 auto;
+  // margin: 0 auto;
   max-width: 480px;
 `;

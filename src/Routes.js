@@ -11,6 +11,8 @@ import Login from "Pages/Login/Login";
 import Signup from "Pages/Signup/Signup";
 import Signupnext from "Pages/Signup/Signupnext";
 import Index from "Pages/Exchange/Index";
+import Main from "Pages/Main/Main";
+import Myassetprofitloss from "Pages/Exchange/Components/Myassetprofitloss";
 
 function Routes() {
   return (
@@ -21,6 +23,8 @@ function Routes() {
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/signupnext" component={Signupnext} />
         <Route exact path="/exchange" component={Index} />
+        <Route exact path="/main" component={Main} />
+        <Route exact path="/myassetprofitloss" component={Myassetprofitloss} />
         <Redirect to="/error" />
       </Switch>
     </Router>
