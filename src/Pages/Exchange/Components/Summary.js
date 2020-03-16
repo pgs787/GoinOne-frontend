@@ -6,15 +6,14 @@ import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
 
 const Summary = () => {
   const [coin, setCoin] = useState([]);
-  useEffect(() => {
-    fetch("http://localhost:3000/mockdata/coin.json")
-      .then(res => res.json())
-      .then(res => setCoin(res.coin));
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://localhost:3000/mockdata/coin.json")
+  //     .then(res => res.json())
+  //     .then(res => setCoin(res.coin));
+  // }, []);
   return (
     <SummarWrpper>
       <Coinname>
-        <Coinicon alt="img" />
         <En>BTC</En>
         <Kr>비트코인</Kr>
         <Marketname>Main 마켓</Marketname>
@@ -54,9 +53,7 @@ const SummarWrpper = styled.div`
   font-size: 15px;
 `;
 const Coinname = styled.div``;
-const Coinicon = styled.img`
-  margin-right: 5px;
-`;
+
 const En = styled.span`
   font-weight: 700;
   margin-right: 5px;

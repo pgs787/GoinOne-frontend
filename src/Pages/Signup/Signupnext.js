@@ -20,6 +20,7 @@ const Signupnext = props => {
     pwdcheck: "",
     correct_email: false
   });
+
   const [pwdvisible, setPwdvisible] = useState(false);
   const [pwdcheckvisible, setPwdcheckvisible] = useState(false);
   const [upper, setUpper] = useState(false);

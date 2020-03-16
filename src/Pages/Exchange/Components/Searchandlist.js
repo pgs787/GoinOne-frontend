@@ -1,10 +1,46 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
+import { connect } from "react-redux";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faSearch, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faArrowDown,
+  faTimes
+} from "@fortawesome/free-solid-svg-icons";
+import { numberFormat } from "util/regexp";
 
-const Searchandlist = () => {
+const Searchandlist = ({ status }) => {
+  const [search, Setsearch] = useState("");
+  const [coin, setCoin] = useState([]);
+  const getCoin = () => {
+    fetch("http://10.58.3.173:8000/exchange/BTC/krw", {
+      method: "GET"
+    })
+      .then(res => res.json())
+      .then(res => console.log(res));
+  };
+
+  useEffect(() => {
+    getCoin();
+  }, []);
+
+  const mapOfCoin = item => {
+    return item.map((ele, idx) => (
+      <Coin key={idx}>
+        <Coinname>
+          <NameTop>{ele.code}</NameTop>
+          <NameBottom>{ele.name}</NameBottom>
+        </Coinname>
+        <CoinPrice>{numberFormat(ele.price.slice(0, 7))}</CoinPrice>
+        <Variance>+0,79%</Variance>
+        <TradeAmount>31,902백만</TradeAmount>
+      </Coin>
+    ));
+  };
+
   return (
     <Wrapper>
       <Header>
@@ -15,10 +51,19 @@ const Searchandlist = () => {
         />
         <Search>
           <SearchInner>
-            <Input placeholder="코인 검색"></Input>
+            <Input
+              placeholder="코인 검색"
+              onChange={e => {
+                Setsearch(e.target.value);
+              }}
+              value={search}
+            ></Input>
             <FontAwesomeIcon
-              icon={faSearch}
+              icon={search ? faTimes : faSearch}
               color="gray"
+              onClick={() => {
+                search && Setsearch("");
+              }}
               style={{
                 cursor: "pointer",
                 position: "absolute",
@@ -48,22 +93,16 @@ const Searchandlist = () => {
           <FontAwesomeIcon style={{ cursor: "pointer" }} icon={faArrowDown} />
         </List>
       </Categorylist>
-      <CoinList>
-        <Coin>
-          <Coinname>
-            <NameTop>BTC</NameTop>
-            <NameBottom>비트코인</NameBottom>
-          </Coinname>
-          <CoinPrice>6,870,000</CoinPrice>
-          <Variance>+0,79%</Variance>
-          <TradeAmount>31,902백만</TradeAmount>
-        </Coin>
-      </CoinList>
+      <CoinList status={status}>{coin && mapOfCoin(coin)}</CoinList>
     </Wrapper>
   );
 };
-
-export default Searchandlist;
+const mapStateToProps = state => {
+  return {
+    status: state.ChatOption.status
+  };
+};
+export default connect(mapStateToProps, {})(Searchandlist);
 const Wrapper = styled.div`
   padding: 20px 8px;
 `;
@@ -77,7 +116,6 @@ const Header = styled.div`
 const Search = styled.div`
   flex: 1 1 auto;
   position: relative;
-
   padding-left: 10px;
 `;
 const SearchInner = styled.div`
@@ -208,8 +246,21 @@ const List = styled.div`
   }}
 `;
 const CoinList = styled.div`
-  height: 100%;
+  height: ${props => (props.status ? "780px" : "610px")};
   overflow: auto;
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #c9ccd2;
+    border-radius: 10px;
+  }
 `;
 
 const Coin = styled.div`

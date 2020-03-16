@@ -1,9 +1,10 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 
-const Myasset = () => {
+const Myasset = ({ status }) => {
   const mapOfItems = () => {};
   return (
     <Wrapper>
@@ -20,7 +21,7 @@ const Myasset = () => {
         <Text>2,080원</Text>
         <Text two>-42.85%</Text>
       </Price>
-      <ListWrapper>
+      <ListWrapper status={status}>
         <ListHeader>
           <Name one>자산명</Name>
           <Name two>보유 수량</Name>
@@ -50,8 +51,10 @@ const Myasset = () => {
     </Wrapper>
   );
 };
-
-export default Myasset;
+const mapStateToProps = state => {
+  return { status: state.ChatOption.status };
+};
+export default connect(mapStateToProps, {})(Myasset);
 
 const Wrapper = styled.div`
   padding: 20px 15px;
@@ -73,6 +76,7 @@ const Right = styled.div`
   right: 10px;
   color: #9e9e9e;
   font-size: 14px;
+  cursor: pointer;
 `;
 
 const Price = styled.div`
