@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,9 +7,40 @@ import {
   faCaretDown
 } from "@fortawesome/free-solid-svg-icons";
 
+const getData = () => {
+  return fetch("http://localhost:3000/mockdata/amount.json");
+};
 const Amount = () => {
-  const mapOfItem = () => {};
-  const getItems = () => {};
+  const [list, setList] = useState([]);
+  const [graphlen, setGraphlen] = useState([]);
+  const [result, setResult] = useState(0);
+
+  useEffect(() => {
+    getData()
+      .then(res => res.json())
+      .then(res => {
+        setList(res.time);
+      });
+  }, []);
+  for (let i = 0; i < list.length; i++) {
+    graphlen.push(list[i].price);
+  }
+  const mapOfItem = item => {
+    return item.map((ele, idx) => (
+      <Main key={idx}>
+        <Graph>
+          <Action />
+        </Graph>
+        <Col1>{ele.time}</Col1>
+        <Col2 status={ele.price}>{ele.price}</Col2>
+        <Col3>{ele.amount}</Col3>
+      </Main>
+    ));
+  };
+  console.log(list);
+  console.log(graphlen);
+  console.log(graphlen);
+
   return (
     <Wrapper>
       <Header>
@@ -47,14 +78,7 @@ const Amount = () => {
           </Content>
         </Name>
       </Header>
-      <Main>
-        <Graph>
-          <Action></Action>
-        </Graph>
-        <Col1>6,900,000</Col1>
-        <Col2>1.8110</Col2>
-        <Col3>7.8148</Col3>
-      </Main>
+      <ListWrapper>{list && mapOfItem(list)}</ListWrapper>
     </Wrapper>
   );
 };
@@ -106,19 +130,37 @@ const Main = styled.div`
   border-bottom: 2px solid #fff;
   margin: 0 10px;
   display: flex;
+  overflow: auto;
 `;
-
+const ListWrapper = styled.div`
+  height: 720px;
+  overflow: auto;
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #c9ccd2;
+    border-radius: 10px;
+  }
+`;
 const Graph = styled.div`
-  padding-left: 80px;
+  padding-left: 100px;
   position: absolute;
-  z-index: -1;
   top: 50%;
   transform: translateY(-50%);
+
   width: 100%;
   height: 21px;
 `;
 const Action = styled.div`
-  background-color: rgba(23, 99, 182, 0.1);
+  width: 50%;
+  background-color: skyblue;
   height: 100%;
 `;
 
@@ -126,8 +168,6 @@ const col = css`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f7fbff;
-
   font-size: 14px;
   cursor: pointer;
 `;
@@ -142,11 +182,11 @@ const Col1 = styled.div`
 
 const Col2 = styled.div`
   ${col};
+  z-index: 1;
   color: red;
   flex: 0 0 auto;
   justify-content: flex-end;
   width: 80px;
-  background-color: #f4f4f4;
   font-weight: none;
 `;
 

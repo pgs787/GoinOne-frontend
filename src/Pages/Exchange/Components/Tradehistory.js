@@ -1,21 +1,46 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import styled, { css, keyframes } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-regular-svg-icons";
 
 const Tradehistory = () => {
+  const [select, setSelect] = useState(1);
+  const [allcoin, setAllcoin] = useState(false);
   return (
     <Wrapper>
       <Header>
-        <Category one>미체결 주문</Category>
-        <Category two>체결내역</Category>
+        <Category1
+          one
+          status={select}
+          onClick={() => {
+            setSelect(1);
+          }}
+        >
+          미체결 주문
+        </Category1>
+        <Category2
+          two
+          status={select}
+          onClick={() => {
+            setSelect(2);
+          }}
+        >
+          체결내역
+        </Category2>
       </Header>
       <Main>
-        <CoinCheck>
-          모든 코인
-          <SildeCircle>
-            <Circle></Circle>
-          </SildeCircle>
+        <CoinCheck
+          select={select}
+          onClick={() => {
+            select === 1 && setAllcoin(!allcoin);
+          }}
+        >
+          {select !== 1 ? "더보기 >" : "모든 코인"}
+          {select === 1 && (
+            <SildeCircle status={allcoin}>
+              <Circle status={allcoin}></Circle>
+            </SildeCircle>
+          )}
         </CoinCheck>
         <Bottom>
           <FontAwesomeIcon
@@ -23,7 +48,7 @@ const Tradehistory = () => {
             color="#eee"
             style={{ width: "100px", height: "100px", display: "block" }}
           />
-          <Text>BTC 미체결 주문 없음</Text>
+          <Text>{!allcoin && "BTC"} 미체결 주문 없음</Text>
         </Bottom>
       </Main>
     </Wrapper>
@@ -38,19 +63,27 @@ const Header = styled.div`
   background-color: transparent;
   box-shadow: 0 3px 10px 0 rgba(66, 66, 66, 0.05);
 `;
-const Category = styled.div`
+const category = css`
   display: flex;
   width: 50%;
-  color: ${props => (props.one ? "#9e9e9e" : "#424242")};
   border: 1px solid #eee;
   border-bottom: 0;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-  background-color: ${props => (props.one ? "#fff" : "#eee")};
   font-size: 14px;
   justify-content: center;
   padding: 7px 0;
   cursor: pointer;
+`;
+const Category1 = styled.div`
+  ${category};
+  color: ${props => (props.status === 1 ? "#424242" : "#9e9e9e")};
+  background-color: ${props => (props.status !== 1 ? "#eee" : "#fff")};
+`;
+const Category2 = styled.div`
+  ${category};
+  color: ${props => (props.status === 2 ? "#424242" : "#9e9e9e")};
+  background-color: ${props => (props.status !== 2 ? "#eee" : "#fff")};
 `;
 const Main = styled.div`
   height: 360px;
@@ -72,7 +105,10 @@ const CoinCheck = styled.div`
   font-weight: bold;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
+  padding-right: ${props => props.select === 2 && "20px"};
+  cursor: pointer;
 `;
+
 const SildeCircle = styled.div`
   display: flex;
   align-items: center;
@@ -81,8 +117,9 @@ const SildeCircle = styled.div`
   margin-left: 10px;
   border-radius: 20px;
   border: 1px solid #eee;
-  background-color: #eee;
+  background-color: ${props => (props.status ? "#1772F8" : "#eee")};
   cursor: pointer;
+  transition: all 0.5s ease;
 `;
 const Circle = styled.div`
   width: 16px;
@@ -90,6 +127,8 @@ const Circle = styled.div`
   border: 1px solid #fff;
   background-color: #fff;
   border-radius: 10px;
+  transform: ${props => (props.status ? "translateX(14px)" : "")};
+  transition: transform 0.5s ease;
 `;
 
 const Text = styled.div`

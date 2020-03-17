@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled, { css } from "styled-components";
-
+import { connect } from "react-redux";
 import ExchangeLayout from "Components/Layout/ExchangeLayout";
 import Summary from "./Components/Summary";
 import Time from "./Components/Dealtime";
@@ -12,7 +12,7 @@ import Chat from "./Components/Chat";
 import Searchandlist from "./Components/Searchandlist";
 import Aseetlist from "./Components/Myasset";
 
-const Index = () => {
+const Index = ({ status }) => {
   return (
     <ExchangeLayout exchange={true}>
       <Inner>
@@ -40,22 +40,23 @@ const Index = () => {
           </Boxgroup>
         </Leftbox>
         <Rightbox>
-          <Searchcoin>
+          <Searchcoin status={status}>
             <Searchandlist />
           </Searchcoin>
           <Myasset>
-            <Aseetlist></Aseetlist>
+            <Aseetlist />
           </Myasset>
-          <ChatWrapper>
-            <Chat />
-          </ChatWrapper>
+          <Chat />
         </Rightbox>
       </Inner>
     </ExchangeLayout>
   );
 };
+const mapStateToProps = state => {
+  return { status: state.ChatOption.status };
+};
 
-export default Index;
+export default connect(mapStateToProps, {})(Index);
 
 const box = css`
   border: 1px solid #eee;
@@ -115,15 +116,12 @@ const Rightbox = styled.div`
 `;
 const Searchcoin = styled.div`
   ${box}
-  height: 780px;
+  height: ${props => (props.status ? "950px" : "780px")};
   margin-bottom: 34px;
+  transition:all .5s ease;
 `;
 const Myasset = styled.div`
   ${box}
   height: 330px;
   margin-bottom: 20px;
-`;
-const ChatWrapper = styled.div`
-  ${box}
-  height: 260px;
 `;

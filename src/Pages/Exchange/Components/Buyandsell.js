@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,11 +8,30 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const Buyandsell = () => {
+  const [select, setSelect] = useState(1);
+  const [price, setPrice] = useState("");
+  const [focus, setFocus] = useState(false);
+
+  console.log(price);
   return (
     <Wrapper>
       <Header>
-        <Category one>매수</Category>
-        <Category two>매도</Category>
+        <Category1
+          status={select}
+          onClick={() => {
+            setSelect(1);
+          }}
+        >
+          매수
+        </Category1>
+        <Category2
+          status={select}
+          onClick={() => {
+            setSelect(2);
+          }}
+        >
+          매도
+        </Category2>
       </Header>
       <Main>
         <Possetion>
@@ -30,13 +49,29 @@ const Buyandsell = () => {
         <PriceTotal>
           <PriceWrapper htmlfor="price" />
           <Price>가격(KRW)</Price>
-          <PriceBtn type="number" name="price" placeholder="6,969,000" />
+          <PriceBtn
+            type="text"
+            onFocus={() => {
+              console.log(focus);
+              setFocus(true);
+            }}
+            value={parseInt(price).toLocaleString()}
+            onBlur={() => {
+              console.log(focus);
+              setFocus(false);
+            }}
+            onChange={e => {
+              let s = "1231231231233";
+              console.log(parseInt(s).toLocaleString());
+              setPrice(e.target.value);
+            }}
+          />
           <BtnWrapper>
             <PriceBtnLeft>
-              <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
+              <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
             </PriceBtnLeft>
             <PriceBtnRight>
-              <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
+              <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
             </PriceBtnRight>
           </BtnWrapper>
         </PriceTotal>
@@ -46,10 +81,10 @@ const Buyandsell = () => {
           <AmountBtn type="amount" name="price" />
           <BtnWrapper>
             <UpdownBtn one>
-              <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
+              <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
             </UpdownBtn>
             <UpdownBtn>
-              <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
+              <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
             </UpdownBtn>
           </BtnWrapper>
         </AmBtnTotal>
@@ -71,7 +106,7 @@ const Buyandsell = () => {
             - <Currency>KRW</Currency>
           </Right>
         </OrderAmount>
-        <OrderBtn>매도</OrderBtn>
+        <OrderBtn status={select}>{select === 1 ? "매수" : "매도"}</OrderBtn>
         <Bottom>
           <BottomLeft>단축키</BottomLeft>
           <BottomRight>
@@ -90,7 +125,7 @@ const Header = styled.div`
   flex: 0 0 40px;
   display: flex;
 `;
-const Category = styled.div`
+const category = css`
   flex: auto;
   display: flex;
   color: #fff;
@@ -98,14 +133,25 @@ const Category = styled.div`
   border-bottom: 0;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-  background-color: ${props => (props.one ? "#e12343" : "#eee")};
-  color: ${props => (props.one ? "white" : "#9e9e9e")};
   font-size: 16px;
   justify-content: center;
   padding: 7px 0;
   cursor: pointer;
+`;
+const Category1 = styled.div`
+  ${category};
+  background-color: ${props => (props.status === 1 ? "#E12343" : "#EEEEEE")};
+  color: ${props => (props.status === 1 ? "white" : "#9e9e9e")};
   &:hover {
-    background-color: #e0e0e0;
+    background-color: ${props => props.status !== 1 && "#E4E4E4"};
+  }
+`;
+const Category2 = styled.div`
+  ${category};
+  background-color: ${props => (props.status === 2 ? "#1763B6" : "#EEEEEE")};
+  color: ${props => (props.status === 2 ? "white" : "#9e9e9e")};
+  &:hover {
+    background-color: ${props => props.status !== 2 && "#E4E4E4"};
   }
 `;
 
@@ -320,7 +366,7 @@ const OrderBtn = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #1763b6;
+  background-color: ${props => (props.status === 1 ? "#E12343" : "#1763b6")};
   color: white;
   padding: 7px 0;
   border-radius: 5px;

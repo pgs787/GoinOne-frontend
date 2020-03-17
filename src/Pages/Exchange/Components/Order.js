@@ -80,6 +80,7 @@ const OrderClick = styled.div`
   -ms-user-select: none;
   user-select: none;
   touch-action: manipulation;
+  cursor: pointer;
 `;
 
 const Accumulate = styled.span`
