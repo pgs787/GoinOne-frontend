@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,28 +8,30 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const getData = () => {
-  return fetch("http://localhost:3000/mockdata/amount.json");
+  return fetch("http://localhost:3000/mockdata/amount.json").then(res =>
+    res.json()
+  );
 };
+
 const Amount = () => {
   const [list, setList] = useState([]);
-  const [graphlen, setGraphlen] = useState([]);
-  const [result, setResult] = useState(0);
 
   useEffect(() => {
-    getData()
-      .then(res => res.json())
-      .then(res => {
-        setList(res.time);
-      });
+    getData().then(res => {
+      setList(res.time);
+    });
   }, []);
-  for (let i = 0; i < list.length; i++) {
-    graphlen.push(list[i].price);
-  }
+
   const mapOfItem = item => {
+    const graphlen = [];
+    for (let i = 0; i < list.length; i++) {
+      graphlen.push(list[i].price);
+    }
+    const result = Math.max.apply(null, graphlen);
     return item.map((ele, idx) => (
       <Main key={idx}>
         <Graph>
-          <Action />
+          <Action max={result} rate={(parseInt(ele.price) / result) * 100} />
         </Graph>
         <Col1>{ele.time}</Col1>
         <Col2 status={ele.price}>{ele.price}</Col2>
@@ -37,9 +39,6 @@ const Amount = () => {
       </Main>
     ));
   };
-  console.log(list);
-  console.log(graphlen);
-  console.log(graphlen);
 
   return (
     <Wrapper>
@@ -159,8 +158,8 @@ const Graph = styled.div`
   height: 21px;
 `;
 const Action = styled.div`
-  width: 50%;
-  background-color: skyblue;
+  width: ${props => props.rate && `${props.rate}%`};
+  background-color: #e7eff8;
   height: 100%;
 `;
 
@@ -195,4 +194,5 @@ const Col3 = styled.div`
   color: gray;
   flex: 1 0 auto;
   justify-content: flex-end;
+  z-index: 100;
 `;

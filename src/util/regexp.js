@@ -13,3 +13,7 @@ export const numberFormat = x => {
   x = x.replace(/,/g, ""); // ,값 공백처리
   return x.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // 정규식을 이용해서 3자리 마다 , 추가
 };
+
+export const removeComma = str => {
+  return parseInt(str.replace(/,/g, ""));
+};

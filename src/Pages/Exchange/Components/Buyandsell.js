@@ -6,11 +6,14 @@ import {
   faMinus,
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
+import { numberFormat, removeComma } from "util/regexp";
 
 const Buyandsell = () => {
   const [select, setSelect] = useState(1);
-  const [price, setPrice] = useState("");
-  const [focus, setFocus] = useState(false);
+  const [price, setPrice] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [pricefocus, setPricefocus] = useState(false);
+  const [amountfocus, setAmountfocus] = useState(false);
 
   console.log(price);
   return (
@@ -46,45 +49,82 @@ const Buyandsell = () => {
             0.0000 <Currency>BTC</Currency>
           </Right>
         </Possible>
-        <PriceTotal>
-          <PriceWrapper htmlfor="price" />
-          <Price>가격(KRW)</Price>
-          <PriceBtn
-            type="text"
-            onFocus={() => {
-              console.log(focus);
-              setFocus(true);
-            }}
-            value={parseInt(price).toLocaleString()}
-            onBlur={() => {
-              console.log(focus);
-              setFocus(false);
-            }}
-            onChange={e => {
-              let s = "1231231231233";
-              console.log(parseInt(s).toLocaleString());
-              setPrice(e.target.value);
-            }}
-          />
+        <PriceTotal status={pricefocus}>
+          <PriceWrapper htmlfor="price">
+            <Price>가격(KRW)</Price>
+            <PriceBtn
+              type="text"
+              name="price"
+              onFocus={() => {
+                setPricefocus(true);
+              }}
+              onBlur={() => {
+                setPricefocus(false);
+              }}
+              value={numberFormat(String(price))}
+              onChange={e => {
+                setPrice(e.target.value);
+              }}
+            />
+          </PriceWrapper>
+
           <BtnWrapper>
-            <PriceBtnLeft>
+            <PriceBtnLeft
+              onClick={() => {
+                setPrice(removeComma(String(price)) + 1000);
+              }}
+            >
               <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
             </PriceBtnLeft>
-            <PriceBtnRight>
+            <PriceBtnRight
+              onClick={() => {
+                setPrice(removeComma(String(price)) - 1000);
+              }}
+            >
               <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
             </PriceBtnRight>
           </BtnWrapper>
         </PriceTotal>
-        <AmBtnTotal>
-          <AmBtnWrapper htmlfor="amount" />
-          <Amount>수량(BTC)</Amount>
-          <AmountBtn type="amount" name="price" />
-          <BtnWrapper>
-            <UpdownBtn one>
-              <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
+        <AmBtnTotal status={amountfocus}>
+          <AmBtnWrapper htmlfor="amount">
+            <Amount>수량(BTC)</Amount>
+            <AmountBtn
+              name="amount"
+              onFocus={() => {
+                setAmountfocus(true);
+              }}
+              onBlur={() => {
+                setAmountfocus(false);
+              }}
+              value={numberFormat(String(amount))}
+              onChange={e => {
+                setAmount(e.target.value);
+              }}
+            />
+          </AmBtnWrapper>
+          <BtnWrapper two>
+            <UpdownBtn
+              one
+              onClick={() => {
+                setAmount(removeComma(String(amount)) + 1000);
+              }}
+            >
+              <FontAwesomeIcon
+                style={{ width: "10px" }}
+                icon={faPlus}
+                color="black"
+              />
             </UpdownBtn>
-            <UpdownBtn>
-              <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
+            <UpdownBtn
+              onClick={() => {
+                setAmount(removeComma(String(amount)) - 1000);
+              }}
+            >
+              <FontAwesomeIcon
+                style={{ width: "10px" }}
+                icon={faMinus}
+                color="black"
+              />
             </UpdownBtn>
           </BtnWrapper>
         </AmBtnTotal>
@@ -204,10 +244,11 @@ const PriceTotal = styled.div`
   justify-content: flex-end;
   align-items: flex-start;
   position: relative;
-  height: 54px;
+  height: 58px;
   padding: 20px 8px 6px;
   border-radius: 3px;
   background-color: #fafafa;
+  border: ${props => props.status && "1px solid #1772F8 "};
 `;
 const PriceWrapper = styled.label`
   position: absolute;
@@ -217,13 +258,14 @@ const PriceWrapper = styled.label`
   left: 0;
   flex: none;
   padding: 4px 0 0 8px;
+  vertical-align: top;
+  text-align: left;
   color: #9e9e9e;
   font-size: 12px;
   cursor: pointer;
 `;
 const Price = styled.span`
   ${priceandamount}
-  width:100%;
   padding: 0;
   top: 5px;
   position: absolute;
@@ -231,7 +273,7 @@ const Price = styled.span`
 `;
 const Amount = styled.div`
   ${priceandamount}
-  width:100%;
+
   padding: 0;
   top: 5px;
   position: absolute;
@@ -239,8 +281,7 @@ const Amount = styled.div`
 `;
 const PriceBtn = styled.input`
   flex: auto;
-  width: 100%;
-  position: inherit;
+  width: 90%;
   overflow: hidden;
   text-align: right;
   color: #424242;
@@ -251,6 +292,10 @@ const PriceBtn = styled.input`
   padding: 0;
   border: 0;
   border-radius: 0;
+  position: absolute;
+  top: 18px;
+  right: 8px;
+
   background-color: transparent;
 `;
 const BtnWrapper = styled.div`
@@ -263,6 +308,14 @@ const BtnWrapper = styled.div`
   margin-left: 6px;
   border: 1px solid #e0e0e0;
   background-color: white;
+
+  ${props =>
+    props.two &&
+    css`
+      position: absolute;
+      right: 9px;
+      top: 15px;
+    `}
 `;
 const pricebtn = css`
   width: 50%;
@@ -270,6 +323,7 @@ const pricebtn = css`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  z-index: 1000;
   &:hover {
     background-color: #e0e0e0;
   }
@@ -291,6 +345,8 @@ const AmBtnTotal = styled.div`
   border-radius: 3px;
   background-color: #fafafa;
   margin-top: 12px;
+  cursor: pointer;
+  border: ${props => props.status && "1px solid #1772F8 "};
 `;
 const AmBtnWrapper = styled.label`
   position: absolute;
@@ -307,7 +363,7 @@ const AmBtnWrapper = styled.label`
 
 const AmountBtn = styled.input`
   flex: auto;
-  width: 100%;
+  width: 90%;
   position: inherit;
   overflow: hidden;
   text-align: right;
@@ -319,10 +375,14 @@ const AmountBtn = styled.input`
   border: none;
   outline: none;
   padding: 0;
+  right: 5px;
+  top: 13px;
+  position: absolute;
   background-color: transparent;
 `;
 
 const UpdownBtn = styled.div`
+  z-index: 1000;
   width: 50%;
   display: flex;
   justify-content: center;
@@ -337,7 +397,7 @@ const UpdownBtn = styled.div`
 const Percent = styled.div`
   display: flex;
   border: 1px solid #e0e0e0;
-
+  margin-top: 2px;
   margin-bottom: 15px;
 `;
 const PercentName = styled.div`
