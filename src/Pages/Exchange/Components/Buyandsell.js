@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,7 +16,14 @@ const Buyandsell = () => {
   const [pricefocus, setPricefocus] = useState(false);
   const [amountfocus, setAmountfocus] = useState(false);
 
-  console.log(price);
+  useEffect(() => {
+    fetch(`${KwangHoon}/exchange/trade/buy`, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+      }
+    }).then(res => console.log(res));
+  }, []);
+
   return (
     <Wrapper>
       <Header>

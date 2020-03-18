@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
 import { withRouter } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -70,7 +71,7 @@ const Signupnext = props => {
 
   const handleEmail = () => {
     console.log("확인");
-    fetch("http://10.58.3.169:8000/account/signup ", {
+    fetch(`${KwangHoon}/account/signup`, {
       method: "POST",
       body: JSON.stringify({
         email: email,
@@ -89,6 +90,12 @@ const Signupnext = props => {
           });
         } else if (res.message === "EXISTS_EMAIL") {
           swal("", "유효한 이메일입니다 이메일을 확인 해주세요", "warning");
+        } else {
+          swal(
+            "",
+            "가입 정보가 올바르지 않습니다 다시 확인해 주세요",
+            "warning"
+          );
         }
       });
   };

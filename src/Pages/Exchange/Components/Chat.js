@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+
+import { withRouter } from "react-router-dom";
+
 // 소켓 import
 import socketio from "socket.io-client";
 import styled from "styled-components";
@@ -17,7 +20,7 @@ const day = new Date();
 const hour = day.getHours();
 const minutes = day.getMinutes();
 
-const Chat = ({ status, chatStatus }) => {
+const Chat = props => {
   const [msg, setMsg] = useState("");
   const [res, setRes] = useState([]);
   const bottom = useRef(null);
@@ -59,6 +62,7 @@ const Chat = ({ status, chatStatus }) => {
     ));
   };
 
+  const { status, chatStatus } = props;
   return (
     <Wrapper status={status}>
       <Header status={status}>
@@ -85,9 +89,8 @@ const Chat = ({ status, chatStatus }) => {
           )}
         </Setting>
       </Header>
-      <Chatlist ref={bottom} status={status}>
-        {res && mapOfRes(res)}
-      </Chatlist>
+
+      <Chatlist status={status}>{res && mapOfRes(res)}</Chatlist>
       <InputWrapper status={status}>
         <Input
           status={status}
@@ -96,7 +99,13 @@ const Chat = ({ status, chatStatus }) => {
           onChange={onChange}
           value={msg}
         ></Input>
-        <Inputbtn>전송</Inputbtn>
+        <Inputbtn
+          onClick={() => {
+            !localStorage.getItem("token") && props.history.push("/login");
+          }}
+        >
+          {localStorage.getItem("token") ? "전송" : "로그인"}
+        </Inputbtn>
       </InputWrapper>
     </Wrapper>
   );
@@ -105,7 +114,7 @@ const mapStateToProps = state => {
   return { status: state.ChatOption.status };
 };
 
-export default connect(mapStateToProps, { chatStatus })(Chat);
+export default withRouter(connect(mapStateToProps, { chatStatus })(Chat));
 
 const Wrapper = styled.div`
   padding: 10px;
@@ -210,6 +219,8 @@ const Input = styled.textarea`
   font-size: 12px;
   font-weight: bold;
   resize: none;
+
+  cursor: ${props => (props.local ? "input" : "not-allowed")};
   height: ${props => (props.status ? "0px" : "100%")};
   ::placeholder {
     color: #e0e0e0;
