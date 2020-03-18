@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+// 소켓 import
+import socketio from "socket.io-client";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { chatStatus } from "Redux/Actions";
@@ -9,20 +11,54 @@ import {
   faCog
 } from "@fortawesome/free-solid-svg-icons";
 
+// 웹 소켓 서버에 접속
+const socket = socketio.connect("http://localhost:3001");
+const day = new Date();
+const hour = day.getHours();
+const minutes = day.getMinutes();
+
 const Chat = ({ status, chatStatus }) => {
-  // const [receive, setReceive] = useState("");
-  // const OtherUser = () => {};
-  // useEffect(() => {
-  //   socket.on("chat-msg", obj => {
-  //     const rev = receive;
-  //     obj.key = "key_" + receive + 1;
-  //     console.log(obj);
-  //     rev.unshift(obj);
-  //   });
-  // }, [receive]);
-  // const send = () => {
-  //   window.socket.emit("init", { name: "bella" });
-  // };
+  const [msg, setMsg] = useState("");
+  const [res, setRes] = useState([]);
+  const bottom = useRef(null);
+
+  // 메세지 받기
+  useEffect(() => {
+    socket.on("update message", obj => {
+      setRes(prev => [...prev, obj]);
+      bottom.current.scrollTo({ top: bottom.current.scrollHeight });
+    });
+  }, []);
+
+  const msgSend = e => {
+    if (e.charCode === 13) {
+      if (e.target.value) {
+        // 메세지 보내기
+        socket.emit("send message", {
+          message: msg,
+          hour: hour,
+          minutes: minutes
+        });
+        setMsg("");
+      }
+      e.preventDefault();
+    }
+  };
+  const onChange = e => {
+    setMsg(e.target.value);
+  };
+  const mapOfRes = item => {
+    return item.map((ele, idx) => (
+      <Other key={idx} status={status}>
+        <Left status={status}>
+          <Username>빡기</Username>
+          <Comment>{ele.message}</Comment>
+        </Left>
+        <Right status={status}>{`${ele.hour}:${ele.minutes}`}</Right>
+      </Other>
+    ));
+  };
+
   return (
     <Wrapper status={status}>
       <Header status={status}>
@@ -49,19 +85,16 @@ const Chat = ({ status, chatStatus }) => {
           )}
         </Setting>
       </Header>
-      <Chatlist status={status}>
-        <Other>
-          <Left>
-            <Username>예시</Username>
-            <Comment>하이</Comment>
-          </Left>
-          <Right>21:43</Right>
-        </Other>
+      <Chatlist ref={bottom} status={status}>
+        {res && mapOfRes(res)}
       </Chatlist>
       <InputWrapper status={status}>
         <Input
           status={status}
           placeholder="메세지를 입력하세요. (최대200자)"
+          onKeyPress={msgSend}
+          onChange={onChange}
+          value={msg}
         ></Input>
         <Inputbtn>전송</Inputbtn>
       </InputWrapper>
@@ -103,37 +136,55 @@ const Setting = styled.div`
   right: 10px;
 `;
 const Other = styled.div`
-  display: flex;
+  display: ${props => (props.status ? "none" : "flex")};
+
   padding: 4px 10px;
   font-size: 12px;
+  transition: all 0.5s ease;
 `;
 const Left = styled.div`
-  display: flex;
+  display: ${props => (props.status ? "none" : "inline")};
   flex: auto;
-  width: 100%;
   word-wrap: break-word;
   word-break: break-all;
 `;
 const Right = styled.div`
-  flex: none;
+  flex: ${props => (props.status ? "none" : "flex")};
   width: 40px;
   text-align: right;
-
   color: #bdbdbd;
+  transition: all 0.5s ease;
 `;
-const Username = styled.div`
+const Username = styled.span`
+  display: inline !important;
   color: #12c0f9;
+
   font-weight: 700;
 `;
 const Comment = styled.span`
   padding-left: 8px;
   color: #424242;
 `;
-
 const Chatlist = styled.div`
   width: 100%;
-  height: 165px;
+  height: ${props => (props.status ? "0px" : "160px")};
+  overflow: ${props => (props.status ? "hidden" : "auto")};
   display: ${props => (props.status ? "none" : "block")};
+
+  transition: all 0.2s ease;
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #c9ccd2;
+    border-radius: 10px;
+  }
 `;
 const InputWrapper = styled.div`
   display: ${props => (props.status ? "none" : "flex")};
@@ -159,7 +210,6 @@ const Input = styled.textarea`
   font-size: 12px;
   font-weight: bold;
   resize: none;
-
   height: ${props => (props.status ? "0px" : "100%")};
   ::placeholder {
     color: #e0e0e0;
