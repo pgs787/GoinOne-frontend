@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
+import { numberFormat } from "util/regexp";
 import { connect } from "react-redux";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -10,35 +10,43 @@ import {
   faArrowDown,
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
-import { numberFormat } from "util/regexp";
 
 const Searchandlist = ({ status }) => {
   const [search, Setsearch] = useState("");
+  const [coinSelect, setCoinSelect] = useState(null);
   const [coin, setCoin] = useState([]);
   const getCoin = () => {
-    fetch("http://10.58.3.173:8000/exchange/BTC/krw", {
+    fetch(`${KwangHoon}/exchange/item`, {
       method: "GET"
     })
       .then(res => res.json())
-      .then(res => console.log(res));
+      .then(res => setCoin(res.data));
   };
-
-  useEffect(() => {
-    getCoin();
-  }, []);
+  const selectCoinInfo = () => {};
 
   const mapOfCoin = item => {
-    return item.map((ele, idx) => (
-      <Coin key={idx}>
-        <Coinname>
-          <NameTop>{ele.code}</NameTop>
-          <NameBottom>{ele.name}</NameBottom>
-        </Coinname>
-        <CoinPrice>{numberFormat(ele.price.slice(0, 7))}</CoinPrice>
-        <Variance>+0,79%</Variance>
-        <TradeAmount>31,902백만</TradeAmount>
-      </Coin>
-    ));
+    return item.map(
+      (ele, idx) =>
+        ele.name.includes(search) && (
+          <Coin
+            key={idx}
+            status={coinSelect}
+            idx={idx}
+            onClick={() => {
+              setCoinSelect(idx);
+              console.log(coinSelect);
+            }}
+          >
+            <Coinname>
+              <NameTop>{ele.code}</NameTop>
+              <NameBottom>{ele.name}</NameBottom>
+            </Coinname>
+            <CoinPrice>{parseInt(ele.now_price).toLocaleString()}</CoinPrice>
+            <Variance>+0,79%</Variance>
+            <TradeAmount>31,902백만</TradeAmount>
+          </Coin>
+        )
+    );
   };
 
   return (
@@ -52,6 +60,7 @@ const Searchandlist = ({ status }) => {
         <Search>
           <SearchInner>
             <Input
+              type="text"
               placeholder="코인 검색"
               onChange={e => {
                 Setsearch(e.target.value);
@@ -267,11 +276,11 @@ const Coin = styled.div`
   display: flex;
   position: relative;
   align-items: center;
-  border: 2px solid transparent;
   height: 56px;
   padding: 0 18px;
   font-size: 14px;
   cursor: pointer;
+  border: ${props => props.status === props.idx && "1px solid #1873F8"};
   &:hover {
     background-color: #fafafa;
   }
@@ -290,7 +299,8 @@ const CoinPrice = styled.div`
   flex: 1 0 auto;
   justify-content: flex-end;
   width: 87px;
-  padding-right: 6px;
+  padding-right: 15px;
+  text-align: right;
   align-items: center;
   position: relative;
   color: #e12343;

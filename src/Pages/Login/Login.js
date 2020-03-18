@@ -10,6 +10,7 @@ import Header from "Components/Header/Header";
 import Footer from "Components/Footer/Footer";
 
 import coin from "Img/coin.png";
+import { KwangHoon } from "config";
 
 const Login = props => {
   const [inputs, setInputs] = useState({
@@ -39,12 +40,13 @@ const Login = props => {
       [e.target.name]: e.target.value
     });
   };
+
   const goToSignup = () => {
     props.history.push("/signup");
   };
 
   const handleLogin = () => {
-    fetch("http://10.58.3.169:8000/account/signin", {
+    fetch(`${KwangHoon}/account/signin`, {
       method: "POST",
       body: JSON.stringify({
         email: email,
@@ -129,6 +131,12 @@ const Login = props => {
                 name="pwd"
                 placeholder="Password"
                 type="password"
+                onKeyPress={e => {
+                  if (e.charCode === 13) {
+                    e.preventDefault();
+                    handleLogin();
+                  }
+                }}
               />
               <Loginbtn onClick={handleLogin}>로그인</Loginbtn>
             </Infobox>

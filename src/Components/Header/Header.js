@@ -23,7 +23,14 @@ const Header = props => {
   return (
     <GNB exchange={props.exchange}>
       <Inner>
-        <MainImg className="main_img" src={main} alt="main_img" />
+        <MainImg
+          onClick={() => {
+            props.history.push("/");
+          }}
+          className="main_img"
+          src={main}
+          alt="main_img"
+        />
         <MainWrapper>
           <MainLeftWrapper
             onMouseLeave={() => {

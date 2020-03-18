@@ -1,65 +1,97 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { withRouter } from "react-router-dom";
+import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 
-const Myasset = ({ status }) => {
+let token = localStorage.getItem("token") || "";
+
+const Myasset = props => {
+  useEffect(() => {
+    fetch(`${KwangHoon}/account/balance`, {
+      headers: {
+        Authorization: localStorage.getItem("token")
+      }
+    }).then(res => console.log(res));
+  }, []);
+
   const mapOfItems = () => {};
+  const { status } = props;
   return (
-    <Wrapper>
-      <Header>
-        <Left>자산 평가금액</Left>
-        <Right>더보기 ></Right>
-      </Header>
-      <Price>
-        <FontAwesomeIcon
-          icon={faEye}
-          color="#71A9FB"
-          style={{ backgroundColor: "#e7f1fe" }}
-        />
-        <Text>2,080원</Text>
-        <Text two>-42.85%</Text>
-      </Price>
-      <ListWrapper status={status}>
-        <ListHeader>
-          <Name one>자산명</Name>
-          <Name two>보유 수량</Name>
-          <Name three>수익률</Name>
-        </ListHeader>
-        <List></List>
-        <MainList>
-          <Main one>VANTA</Main>
-          <Main two>
-            <Span two lefttop>
-              9,990,0000
-            </Span>
-            <Span two bottomleft>
-              1,198원
-            </Span>
-          </Main>
-          <Main three>
-            <Span three righttop>
-              -42.85%
-            </Span>
-            <Span three bottomright>
-              899원
-            </Span>
-          </Main>
-        </MainList>
-      </ListWrapper>
+    <Wrapper status={localStorage.getItem("token")}>
+      {localStorage.getItem("token") ? (
+        <>
+          <Header>
+            <Left>자산 평가금액</Left>
+            <Right>더보기 ></Right>
+          </Header>
+          <Price>
+            <FontAwesomeIcon
+              icon={faEye}
+              color="#71A9FB"
+              style={{ backgroundColor: "#e7f1fe" }}
+            />
+            <Text>2,080원</Text>
+            <Text two>-42.85%</Text>
+          </Price>
+          <ListWrapper status={status}>
+            <ListHeader>
+              <Name one>자산명</Name>
+              <Name two>보유 수량</Name>
+              <Name three>수익률</Name>
+            </ListHeader>
+            <List></List>
+            <MainList>
+              <Main one>VANTA</Main>
+              <Main two>
+                <Span two lefttop>
+                  9,990,0000
+                </Span>
+                <Span two bottomleft>
+                  1,198원
+                </Span>
+              </Main>
+              <Main three>
+                <Span three righttop>
+                  -42.85%
+                </Span>
+                <Span three bottomright>
+                  899원
+                </Span>
+              </Main>
+            </MainList>
+          </ListWrapper>
+        </>
+      ) : (
+        <>
+          <LoginCheckText>로그인하고 자산을 확인하세요</LoginCheckText>
+          <CheckBtn
+            onClick={() => {
+              props.history.push("/login");
+            }}
+          >
+            로그인
+          </CheckBtn>
+        </>
+      )}
     </Wrapper>
   );
 };
 const mapStateToProps = state => {
   return { status: state.ChatOption.status };
 };
-export default connect(mapStateToProps, {})(Myasset);
+export default withRouter(connect(mapStateToProps, {})(Myasset));
 
 const Wrapper = styled.div`
   padding: 20px 15px;
   overflow: auto;
   height: 100%;
+  display: ${props => !props.status && "flex"};
+  align-content: ${props => !props.status && "center"};
+  justify-content: ${props => !props.status && "center"};
+  position: ${props => !props.status && "relative"};
 `;
 
 const Header = styled.div`
@@ -186,4 +218,23 @@ const Span = styled.span`
     else if (props.righttop) return "#3B7BC1";
   }};
   margin-bottom: ${props => (props.lefttop || props.righttop) && "5px"};
+`;
+
+const LoginCheckText = styled.div`
+  top: 100px;
+  position: absolute;
+  color: #9e9e9e;
+  font-size: 14px;
+`;
+const CheckBtn = styled.div`
+  top: 150px;
+  position: absolute;
+  padding: 6px 32px;
+  background-color: #1772f8;
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  min-width: 120px;
+  cursor: pointer;
 `;
