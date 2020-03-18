@@ -1,29 +1,35 @@
-# This is a basic workflow to help you get started with Actions
-
+# workflow의 이름
 name: Create React App CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request 
-# events but only for the master branch
+# Controls when the action will run. 
+# Triggers the workflow on push or pull request 
+# events but only for the develop branch
 on:
   pull_request:
     branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  # build라는 이름의 job. 이름은 원하는대로 지을 수 있다.
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # Steps에는 여러 task 들을 가질 수 있다. jobs는 하나의 steps를 가진다.
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    # uses는 이미 정의된 action을 사용하는 것임.
+    # actions/checkout@v2: This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
     - uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
-    - name: Run CRA App
+    # A name for your step to display on GitHub.
+    - name: Set up node
+    # This action sets by node environment
+    # @v1는 -> Reference the major version of a release 
+      uses: actions/setup-node@v1
       with:
-        node-version: 12.x
-    - run: |
+        node-version: '12.x'
+
+    - name: Build CRA App
+      run: |
         npm install
         npm run build
