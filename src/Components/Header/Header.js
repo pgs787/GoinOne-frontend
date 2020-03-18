@@ -5,17 +5,20 @@ import main from "Img/coinone_logo_blue.svg";
 import loud from "Img/icon.png";
 
 const categoryData = ["거래소", "프로차트", "자산", "코인정보", "플러스"];
-let token = localStorage.getItem("token");
 
 const Header = props => {
   const [selectcategory, setSelectcategory] = useState(null);
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   const onChange = num => {
     setSelectcategory(num);
   };
   const handlLogOut = () => {
     localStorage.removeItem("token");
-    props.history.push("/");
+    window.location.reload();
   };
   return (
     <GNB exchange={props.exchange}>
