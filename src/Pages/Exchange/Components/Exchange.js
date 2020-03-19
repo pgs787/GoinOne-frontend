@@ -3,6 +3,7 @@ import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
 import "./Exchange.scss";
+import ExchangeOptions from "./ChartOptions";
 
 highchartsMore(Highcharts);
 
@@ -10,131 +11,46 @@ class Exchange extends Component {
   constructor() {
     super();
     this.state = {
-      options: {
-        chart: {
-          styleMode: true,
-          zoomType: "xy",
-          height: 400,
-          width: 950,
-          marginRight: 60,
-          marginLeft: 60,
-          marginTop: 50,
-          scrollablePlotArea: {
-            scrollPositionX: 0
-          }
-        },
-        title: {
-          text: ""
-        },
-        credits: {
-          enabled: false
-        },
-        series: [
-          {
-            showInLegend: false,
-            name: "BTC",
-            type: "candlestick",
-            data: [],
-            color: "#006388",
-            lineColor: "#006388",
-            upColor: "#d73232",
-            upLineColor: "#d73232",
-            credits: {
-              enabled: false
-            }
-          },
-          {
-            name: "Moving Average (5Day)",
-            type: "spline",
-            data: [],
-            marker: { enabled: false },
-            color: "green",
-            credits: {
-              enabled: false
-            }
-          },
-          {
-            name: "Bollinger Band",
-            type: "arearange",
-            data: [],
-            pointStart: Date.UTC(2019, 11, 13),
-            pointInterval: 24 * 3600,
-            marker: { enabled: false },
-            color: "black",
-            fillOpacity: 0.2,
-            plotOptions: {
-              fillOpacity: 0.3
-            },
-            credits: {
-              enabled: false
-            }
-          }
-        ],
-
-        xAxis: {
-          lineColor: "#000000",
-          lineWidth: 1,
-          type: "datetime",
-          dateTimeLabelFormats: {
-            week: "%Y. %b. %e"
-          },
-          title: {
-            text: "",
-            enabeld: false
-          }
-        },
-        yAxis: {
-          tickAmount: 6,
-          lineColor: "#000000",
-          lineWidth: 1,
-          opposite: true,
-          title: {
-            enabled: false,
-            text: ""
-          },
-          labels: { enabled: true },
-          min: 5000000,
-          max: 13000000
-        }
-      }
+      options: ExchangeOptions.ExchangeOptions
     };
   }
 
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch(
-        "https://crix-api-endpoint.upbit.com/v1/crix/candles/days?code=CRIX.UPBIT.KRW-BTC&count=100&"
-      )
+      fetch("http://10.58.2.33:8000/exchange/report/1/days", {
+        Method: "GET"
+      })
         .then(res => {
           console.log(res);
           return res.json();
         })
         .then(csvReceive => {
+          console.log(csvReceive);
           // CandleChart 그리기
           const CandleStick = [];
           for (let i = 99; i >= 0; i--) {
             CandleStick.push([
-              csvReceive[i].timestamp,
-              csvReceive[i].openingPrice,
-              csvReceive[i].highPrice,
-              csvReceive[i].lowPrice,
-              csvReceive[i].tradePrice
+              csvReceive.data[i].date * 1000,
+              parseInt(csvReceive.data[i].opening_price),
+              parseInt(csvReceive.data[i].high_price),
+              parseInt(csvReceive.data[i].low_price),
+              parseInt(csvReceive.data[i].trade_price)
             ]);
           }
 
-          console.log(csvReceive[0].timestamp);
+          console.log(CandleStick);
 
           //Moving Average 그릴때 i의 배열.length 조건 설정 주의!
           const MovAvg5 = [];
           for (let i = 99; i >= 4; i--) {
             MovAvg5.push([
-              parseInt(csvReceive[i - 4].timestamp),
-              (parseInt(csvReceive[i].tradePrice) +
-                parseInt(csvReceive[i - 1].tradePrice) +
-                parseInt(csvReceive[i - 2].tradePrice) +
-                parseInt(csvReceive[i - 3].tradePrice) +
-                parseInt(csvReceive[i - 4].tradePrice)) /
+              parseInt(csvReceive.data[i - 4].date * 1000),
+              (parseInt(csvReceive.data[i].trade_price) +
+                parseInt(csvReceive.data[i - 1].trade_price) +
+                parseInt(csvReceive.data[i - 2].trade_price) +
+                parseInt(csvReceive.data[i - 3].trade_price) +
+                parseInt(csvReceive.data[i - 4].trade_price)) /
                 5
             ]);
           }
@@ -145,8 +61,8 @@ class Exchange extends Component {
           let closewTime = [];
           for (let i = 99; i >= 0; i--) {
             closewTime.push([
-              csvReceive[i].timestamp,
-              parseInt(csvReceive[i].tradePrice)
+              csvReceive.data[i].date * 1000,
+              parseInt(csvReceive.data[i].trade_price)
             ]);
           }
 
@@ -176,7 +92,7 @@ class Exchange extends Component {
           const BollBand = [];
           for (let i = 0; i <= 95; i++) {
             BollBand.push([
-              csvReceive[-i + 95].timestamp,
+              csvReceive.data[-i + 95].date * 1000,
               MovAvg5[i][1] - 2 * std[i],
               MovAvg5[i][1] + 2 * std[i]
             ]);

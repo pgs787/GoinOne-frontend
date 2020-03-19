@@ -3,19 +3,11 @@ import styled, { css } from "styled-components";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
-import MainLayout from "Components/Layout/SignupLayout";
-import magni from "Img/icon_magni.png";
-import Index from "Pages/Exchange/Index";
-import ExchangeOptions from "../Exchange/Components/ChartOptions";
-import MainBTC from "./Components/MainBTC";
-import MainBCH from "./Components/MainBCH";
-import MainETH from "./Components/MainETH";
-import MainETC from "./Components/MainETH";
-import MainXRP from "./Components/MainETH";
+import ExchangeOptions from "Pages/Exchange/Components/ChartOptions";
 
 highchartsMore(Highcharts);
 
-class Main extends Component {
+class MainXRP extends Component {
   constructor() {
     super();
     this.state = {
@@ -32,7 +24,7 @@ class Main extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/1/days", {
+      fetch("http://10.58.2.33:8000/exchange/report/5/days", {
         method: "GET"
       })
         .then(res => {
@@ -157,45 +149,102 @@ class Main extends Component {
 
   render() {
     return (
-      <MainLayout>
-        <LandingMain>
-          <FilterWarp>
-            <FilterInner>
-              <FilterUl>
-                <FilterLi>#거래량많은</FilterLi>
-                <FilterLi>#급등하는</FilterLi>
-                <FilterLi>#급락하는</FilterLi>
-                <FilterLi>#최근상장</FilterLi>
-              </FilterUl>
-              <FilterSearchBar>
-                <InputSearchWarp>
-                  <InputSearch placeholder="코인 검색"></InputSearch>
-                  <InputSearchMagni>
-                    <InputSearchImg src={magni}></InputSearchImg>
-                  </InputSearchMagni>
-                </InputSearchWarp>
-                <Volume_label>24시간 거래량(원)</Volume_label>
-                <Volume_amount>{this.state.acctradeprice}</Volume_amount>
-              </FilterSearchBar>
-            </FilterInner>
-          </FilterWarp>
+      <CoverArea>
+        <CoverInner>
+          <ChartMain>
+            <ChartMainCard>
+              <ChartMainCard_Left>
+                <ChartMainCard_Left_inner_div_name>
+                  {this.state.name}
+                </ChartMainCard_Left_inner_div_name>
+                <ChartMainCard_Left_inner_div>
+                  Main Market
+                </ChartMainCard_Left_inner_div>
+              </ChartMainCard_Left>
+              <ChartMainCard_Right>
+                <ChartMainCard_Right_Price>
+                  {this.state.closeprice}
+                </ChartMainCard_Right_Price>
+                <ChartMainCard_Right_PriceChange>
+                  등락률: {this.state.chgrate}
+                </ChartMainCard_Right_PriceChange>
+                <ChartMainCard_Right_AmountChange>
+                  거래대금: {this.state.acctradeprice}
+                </ChartMainCard_Right_AmountChange>
+              </ChartMainCard_Right>
+            </ChartMainCard>
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={this.state.options}
+            ></HighchartsReact>
+            <ToExchangeBtn onClick={this.toExchange}>
+              거래소 바로가기
+            </ToExchangeBtn>
+          </ChartMain>
+          <TableMainWrap_div>
+            <TableMain_table>
+              <TableMain_tr>
+                <TableMain_th1>최근24시간 기준</TableMain_th1>
+                <TableMain_th>현재가</TableMain_th>
+                <TableMain_th>등락률</TableMain_th>
+                <TableMain_th>거래대금</TableMain_th>
+                <TableMain_th>거래수량</TableMain_th>
+              </TableMain_tr>
+              <TableMain_tr>
+                <TableMain_td1_left>{this.state.name}</TableMain_td1_left>
+                <TableMain_td_right_red>
+                  {this.state.closeprice}
+                </TableMain_td_right_red>
+                <TableMain_td_right_red>
+                  {this.state.chgrate}
+                </TableMain_td_right_red>
+                <TableMain_td_right>
+                  {this.state.acctradeprice}
+                </TableMain_td_right>
+                <TableMain_td_right>
+                  {this.state.acctradevolume}
+                </TableMain_td_right>
+              </TableMain_tr>
+              <TableMain_tr>
+                <TableMain_td1_left>
+                  <TableMain_td1_span>ETH</TableMain_td1_span>
+                </TableMain_td1_left>
+                <TableMain_td_right>157,450</TableMain_td_right>
+                <TableMain_td_right>-13.5%</TableMain_td_right>
+                <TableMain_td_right>거래대금</TableMain_td_right>
+                <TableMain_td_right></TableMain_td_right>
+              </TableMain_tr>
+              <TableMain_tr>
+                <TableMain_td1_left>
+                  <TableMain_td1_span>XRP</TableMain_td1_span>
+                </TableMain_td1_left>
+                <TableMain_td_right>159</TableMain_td_right>
+                <TableMain_td_right>-13.5%</TableMain_td_right>
 
-          <CoverArea>
-            <CoverInner>
-              <MainBTC></MainBTC>
-              <MainETH></MainETH>
-              <MainETC></MainETC>
-              <MainBCH></MainBCH>
-              <MainXRP></MainXRP>
-            </CoverInner>
-          </CoverArea>
-        </LandingMain>
-      </MainLayout>
+                <TableMain_td_right>거래대금</TableMain_td_right>
+                <TableMain_td_right></TableMain_td_right>
+              </TableMain_tr>
+              <TableMain_tr>
+                <TableMain_td1_left>
+                  <TableMain_td1_span>BCH</TableMain_td1_span>
+                </TableMain_td1_left>
+                <TableMain_td_right>216,000</TableMain_td_right>
+                <TableMain_td_right>-13.5%</TableMain_td_right>
+                <TableMain_td_right>거래대금</TableMain_td_right>
+                <TableMain_td_right></TableMain_td_right>
+              </TableMain_tr>
+            </TableMain_table>
+            <ToExchangeBtn onClick={this.toExchange}>
+              코인 더 보러가기 >
+            </ToExchangeBtn>
+          </TableMainWrap_div>
+        </CoverInner>
+      </CoverArea>
     );
   }
 }
 
-export default Main;
+export default MainXRP;
 
 const LandingMain = styled.div`
   height: 600px;
@@ -297,9 +346,9 @@ const Volume_amount = styled.span`
 const CoverArea = styled.div`
   width: 1903px;
   height: 520px;
-  border-top: 1px solid rgba(232, 232, 232, 1);
-  padding-top: 40px;
-  margin-top: 25px;
+  // border-top: 1px solid rgba(232, 232, 232, 1);
+  padding-top: 20px;
+  margin-top: 5px;
 `;
 
 const CoverInner = styled.div`

@@ -11,25 +11,19 @@ class Myassetprofitloss extends Component {
   constructor() {
     super();
     this.state = {
-      coin: "",
-      amount: "",
-      buyprice: "",
-      avgbuyprice: "",
-      nowprice: "",
-      krwbalance: "",
-      coinbalance: "",
+      coinliststate: [],
       totalasset: "",
       totalbuyprice: "",
-      profitloss: "",
-      profitrate: ""
+      totalprofitloss: "",
+      totalprofitrate: "",
+      krwbalance: "",
+      coinbalance: ""
     };
   }
 
   componentDidMount() {
-    // const component = this;
-    // this.interval = setInterval(function() {
-    fetch("http://10.58.2.252:8000/account/balance", {
-      Method: "POST",
+    fetch("http://10.58.2.33:8000/account/balance", {
+      Method: "GET",
       headers: {
         Authorization:
           "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
@@ -40,53 +34,88 @@ class Myassetprofitloss extends Component {
         return res.json();
       })
       .then(csvReceive => {
-        console.log("Total Data", csvReceive);
-        console.log("balance", csvReceive.balance); //데이터 들어오는지 확인
-        console.log(
-          "balance",
-          typeof Math.floor(parseFloat(csvReceive.balance[0].buy_price))
-        ); //데이터 들어오는지 확인
+        console.log("Total Data", csvReceive.balance.length);
         console.log("total_asset", csvReceive.total_asset);
 
-        function numberWithCommas(x) {
-          return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+        const coinlistfilter = csvReceive.balance;
 
+        console.log(csvReceive.balance[0].amount);
+
+        for (let i = 0; i < csvReceive.balance.length; i++) {
+          coinlistfilter[i].name = csvReceive.balance[i].name;
+          coinlistfilter[i].amount = Math.floor(
+            parseInt(csvReceive.balance[i].amount)
+          );
+
+          coinlistfilter[i].avg_buy_price = Math.floor(
+            parseInt(csvReceive.balance[i].avg_buy_price)
+          );
+          coinlistfilter[i].now_price = Math.floor(
+            parseInt(csvReceive.balance[i].now_price)
+          );
+          coinlistfilter[i].buy_price = Math.floor(
+            parseInt(csvReceive.balance[i].buy_price)
+          );
+          coinlistfilter[i].change_price = Math.floor(
+            parseInt(csvReceive.balance[i].change_price)
+          );
+          coinlistfilter[i].change_rate = Math.floor(
+            parseFloat(csvReceive.balance[i].change_rate)
+          ).toFixed(1);
+        }
         this.setState({
-          coin: csvReceive.balance[0].name,
-          amount: numberWithCommas(Math.floor(csvReceive.balance[0].amount)),
-          buyprice: numberWithCommas(
-            Math.floor(csvReceive.balance[0].buy_price)
+          coinliststate: coinlistfilter,
+          totalasset: this.numberWithCommas(
+            Math.floor(parseInt(csvReceive.total_asset.currency_balance)) +
+              Math.floor(parseInt(csvReceive.total_asset.item_balance))
           ),
-          nowprice: numberWithCommas(
-            Math.floor(csvReceive.balance[0].now_price)
+          totalbuyprice: this.numberWithCommas(
+            Math.floor(parseInt(csvReceive.total_asset.total_buy_price))
           ),
-          avgbuyprice: numberWithCommas(
-            Math.floor(csvReceive.balance[0].avg_buy_price)
+          totalprofitloss: this.numberWithCommas(
+            Math.floor(parseInt(csvReceive.total_asset.total_change_price))
           ),
-          krwbalance: numberWithCommas(
-            Math.floor(csvReceive.total_asset.currency_balance)
+          totalprofitrate: this.numberWithCommas(
+            Math.floor(parseInt(csvReceive.total_asset.total_change_rate))
           ),
-          coinbalance: numberWithCommas(
-            Math.floor(csvReceive.total_asset.item_balance)
+          krwbalance: this.numberWithCommas(
+            Math.floor(parseInt(csvReceive.total_asset.currency_balance))
           ),
-          totalasset: numberWithCommas(
-            Math.floor(csvReceive.total_asset.currency_balance) +
-              Math.floor(csvReceive.total_asset.item_balance)
-          ),
-          totalbuyprice: numberWithCommas(
-            Math.floor(csvReceive.total_asset.total_buy_price)
-          ),
-          profitloss: numberWithCommas(
-            Math.floor(csvReceive.total_asset.total_change_price)
-          ),
-          profitrate: numberWithCommas(
-            Math.floor(csvReceive.total_asset.total_change_rate)
+          coinbalance: this.numberWithCommas(
+            Math.floor(parseInt(csvReceive.total_asset.item_balance))
           )
         });
       });
   }
 
+  numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  coinlist = item => {
+    console.log(this.state.BTC);
+    return item.map((ele, idx) => (
+      <tr>
+        <TableTrTdLeft>{ele.name}</TableTrTdLeft>
+        <TableTrTdRight>
+          <p>{this.numberWithCommas(ele.amount)} 개</p>
+          <p>≈ {this.numberWithCommas(ele.now_price)} 원</p>
+        </TableTrTdRight>
+        <TableTrTdRight>
+          {this.numberWithCommas(ele.buy_price)} 원
+        </TableTrTdRight>
+        <TableTrTdRight>
+          {this.numberWithCommas(ele.change_price)} 원
+        </TableTrTdRight>
+        <TableTrTdRight>
+          {this.numberWithCommas(ele.change_rate)} %
+        </TableTrTdRight>
+        <TableTrTdRight>
+          {this.numberWithCommas(ele.avg_buy_price)} 원
+        </TableTrTdRight>
+      </tr>
+    ));
+  };
   render() {
     return (
       <>
@@ -151,7 +180,7 @@ class Myassetprofitloss extends Component {
                           평가 손익
                         </AssetPLwrap_right_div_mid1_box3_inner1>
                         <AssetPLwrap_right_div_mid1_box3_inner2_pricechange>
-                          {this.state.profitloss}
+                          {this.state.totalprofitloss}
                         </AssetPLwrap_right_div_mid1_box3_inner2_pricechange>
                       </AssetPLwrap_right_div_mid1_box3_innerwrap1>
                       <AssetPLwrap_right_div_mid1_box3_innerwrap1>
@@ -159,7 +188,7 @@ class Myassetprofitloss extends Component {
                           수익률
                         </AssetPLwrap_right_div_mid1_box3_inner1>
                         <AssetPLwrap_right_div_mid1_box3_inner2_pctchange>
-                          {this.state.profitrate}
+                          {this.state.totalprofitrate} %
                         </AssetPLwrap_right_div_mid1_box3_inner2_pctchange>
                       </AssetPLwrap_right_div_mid1_box3_innerwrap1>
                     </AssetPLwrap_right_div_mid1_box3>
@@ -168,54 +197,18 @@ class Myassetprofitloss extends Component {
                     매수평균가, 평가금액, 평가손익, 수익률은 모두 KRW로 환산한
                     추정 값으로 참고용입니다
                   </AssetPLwrap_right_div_mid2>
-                  <AssetPLwrap_right_div_btm>
-                    <AssetPLwrap_right_div_btm_head>
-                      <AssetPLwrap_right_div_btm_head_ul>
-                        <AssetPLwrap_right_div_btm_head_li>
-                          <AssetPLwrap_right_div_btm_head_listdiv1>
-                            코인명
-                          </AssetPLwrap_right_div_btm_head_listdiv1>
-                          <AssetPLwrap_right_div_btm_head_listdiv2>
-                            보유 수량
-                          </AssetPLwrap_right_div_btm_head_listdiv2>
-                          <AssetPLwrap_right_div_btm_head_listdiv3>
-                            매수 금액
-                          </AssetPLwrap_right_div_btm_head_listdiv3>
-                          <AssetPLwrap_right_div_btm_head_listdiv4>
-                            평가 손익
-                          </AssetPLwrap_right_div_btm_head_listdiv4>
-                          <AssetPLwrap_right_div_btm_head_listdiv5>
-                            수익률
-                          </AssetPLwrap_right_div_btm_head_listdiv5>
-                          <AssetPLwrap_right_div_btm_head_listdiv6>
-                            매수 평균가
-                          </AssetPLwrap_right_div_btm_head_listdiv6>
-                        </AssetPLwrap_right_div_btm_head_li>
-                      </AssetPLwrap_right_div_btm_head_ul>
-                    </AssetPLwrap_right_div_btm_head>
-                    <AssetPLwrap_right_div_btm_head_ul>
-                      <AssetPLwrap_right_div_btm_list_li>
-                        <AssetPLwrap_right_div_btm_list_listdiv1>
-                          {this.state.coin}
-                        </AssetPLwrap_right_div_btm_list_listdiv1>
-                        <AssetPLwrap_right_div_btm_list_listdiv2>
-                          {this.state.amount}
-                        </AssetPLwrap_right_div_btm_list_listdiv2>
-                        <AssetPLwrap_right_div_btm_list_listdiv3>
-                          {this.state.buyprice}
-                        </AssetPLwrap_right_div_btm_list_listdiv3>
-                        <AssetPLwrap_right_div_btm_list_listdiv4>
-                          {this.state.profitloss}
-                        </AssetPLwrap_right_div_btm_list_listdiv4>
-                        <AssetPLwrap_right_div_btm_list_listdiv5>
-                          {this.state.profitrate}
-                        </AssetPLwrap_right_div_btm_list_listdiv5>
-                        <AssetPLwrap_right_div_btm_list_listdiv6>
-                          {this.state.avgbuyprice}
-                        </AssetPLwrap_right_div_btm_list_listdiv6>
-                      </AssetPLwrap_right_div_btm_list_li>
-                    </AssetPLwrap_right_div_btm_head_ul>
-                  </AssetPLwrap_right_div_btm>
+
+                  <Table>
+                    <tr>
+                      <TableTrThLeft>코인명</TableTrThLeft>
+                      <TableTrThRight>보유 수량</TableTrThRight>
+                      <TableTrThRight>매수 금액</TableTrThRight>
+                      <TableTrThRight>평가 손익</TableTrThRight>
+                      <TableTrThRight>수익률</TableTrThRight>
+                      <TableTrThRight>매수 평균가</TableTrThRight>
+                    </tr>
+                    {this.coinlist(this.state.coinliststate)}
+                  </Table>
                 </AssetPLwrap_right_div_wrap>
               </AssetPLwrap_right>
             </AssetPLwrap>
@@ -390,9 +383,7 @@ const AssetPLwrap_right_div_mid1_box3_inner2_pricechange = styled.div`
   font-weight: 500;
 `;
 
-const AssetPLwrap_right_div_mid1_box3_inner2_pctchange = styled.div`
-  color: blue;
-`;
+const AssetPLwrap_right_div_mid1_box3_inner2_pctchange = styled.div``;
 
 const AssetPLwrap_right_div_mid2 = styled.div`
   width: 1018px;
@@ -403,121 +394,36 @@ const AssetPLwrap_right_div_mid2 = styled.div`
   font-weight: 500;
 `;
 
-const AssetPLwrap_right_div_btm = styled.div`
-  width: 1018px;
+const Table = styled.table`
+  width: 1020px;
 `;
 
-const AssetPLwrap_right_div_btm_head = styled.div``;
-const AssetPLwrap_right_div_btm_head_ul = styled.ul``;
-const AssetPLwrap_right_div_btm_head_li = styled.li`
-  width: 1029px;
-  display: flex;
-  flex-direction: row;
-  background-color: #f4f4f4;
+const TableTrThRight = styled.th`
+  font-size: 12px;
   height: 36px;
-  align-items: center;
+  text-align: right;
+  background-color: #f4f4f4;
+  padding-right: 16px;
 `;
 
-const AssetPLwrap_right_div_btm_head_listdiv1 = styled.div`
+const TableTrThLeft = styled.th`
   font-size: 12px;
-  width: 155px;
+  height: 36px;
   text-align: left;
-  padding: 0px 8px 0px 16px;
-  // color: #747474;
-  font-weight: 700;
+  background-color: #f4f4f4;
+  padding-left: 16px;
 `;
 
-const AssetPLwrap_right_div_btm_head_listdiv2 = styled.div`
-  font-size: 12px;
-  width: 209px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-
-const AssetPLwrap_right_div_btm_head_listdiv3 = styled.div`
-  font-size: 12px;
-  width: 162px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-
-const AssetPLwrap_right_div_btm_head_listdiv4 = styled.div`
-  font-size: 12px;
-  width: 171px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-
-const AssetPLwrap_right_div_btm_head_listdiv5 = styled.div`
-  font-size: 12px;
-  width: 119px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-
-const AssetPLwrap_right_div_btm_head_listdiv6 = styled.div`
-  font-size: 12px;
-  width: 213px;
-  text-align: right;
-  padding: 0px 8px 0px 16px;
-  color: #747474;
-  font-weight: 500;
-`;
-
-const AssetPLwrap_right_div_btm_list_li = styled.li`
-  width: 1029px;
-  display: flex;
-  flex-direction: row;
-  background-color: white;
+const TableTrTdRight = styled.td`
+  font-size: 14px;
   height: 60px;
-  align-items: center;
+  text-align: right;
+  padding-right: 16px;
 `;
 
-const AssetPLwrap_right_div_btm_list_listdiv1 = styled.div`
+const TableTrTdLeft = styled.td`
   font-size: 14px;
-  width: 155px;
+  height: 60px;
   text-align: left;
-  padding: 0px 8px 0px 16px;
-  // color: #747474;
-  font-weight: 700;
-`;
-const AssetPLwrap_right_div_btm_list_listdiv2 = styled.div`
-  font-size: 14px;
-  width: 209px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-const AssetPLwrap_right_div_btm_list_listdiv3 = styled.div`
-  font-size: 14px;
-  width: 162px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-const AssetPLwrap_right_div_btm_list_listdiv4 = styled.div`
-  font-size: 14px;
-  width: 171px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-const AssetPLwrap_right_div_btm_list_listdiv5 = styled.div`
-  font-size: 14px;
-  width: 119px;
-  text-align: right;
-  color: #747474;
-  font-weight: 500;
-`;
-const AssetPLwrap_right_div_btm_list_listdiv6 = styled.div`
-  font-size: 14px;
-  width: 213px;
-  text-align: right;
-  padding: 0px 8px 0px 16px;
-  color: #747474;
-  font-weight: 500;
+  padding-left: 16px;
 `;
