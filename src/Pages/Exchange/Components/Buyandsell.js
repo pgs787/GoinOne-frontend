@@ -1,28 +1,113 @@
-import React, { useState, useEffect, useRef } from "react";
-import { KwangHoon } from "config";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import styled, { css } from "styled-components";
+import { KwangHoon } from "config";
+import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
   faMinus,
   faInfoCircle
 } from "@fortawesome/free-solid-svg-icons";
+import { sell, buy, changeMyasset } from "Redux/Actions";
 import { numberFormat, removeComma } from "util/regexp";
 
-const Buyandsell = () => {
+const Buyandsell = ({
+  coinstatus,
+  money,
+  sell,
+  buy,
+  sellToggle,
+  buyToggle
+}) => {
+  const [asset, setAsset] = useState(0);
   const [select, setSelect] = useState(1);
   const [price, setPrice] = useState(0);
   const [amount, setAmount] = useState(0);
   const [pricefocus, setPricefocus] = useState(false);
   const [amountfocus, setAmountfocus] = useState(false);
+  const [balanceCoin, setBalanceCoin] = useState([]);
+  const [coinInfo, setCoinInfo] = useState([]);
+  const valueUp = useRef(null);
 
   useEffect(() => {
-    fetch(`${KwangHoon}/exchange/trade/buy`, {
+    fetch(`${KwangHoon}/account/balance`, {
       headers: {
-        Authorization: localStorage.getItem("token")
+        Authorization:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
       }
-    }).then(res => console.log(res));
+    })
+      .then(res => res.json())
+      .then(res => {
+        setBalanceCoin(res.balance);
+      });
   }, []);
+  const getCoinInfo = useCallback(() => {
+    fetch(`${KwangHoon}/exchange/${coinstatus}`)
+      .then(res => res.json())
+      .then(res => {
+        setPrice(
+          Math.floor(
+            res.item_data[coinstatus === null ? 0 : coinstatus].now_price
+          )
+        );
+        setAmount(
+          res.item_data[coinstatus === null ? 1 : coinstatus].amount_unit
+        );
+        setCoinInfo(res.item_data[coinstatus === null ? 1 : coinstatus]);
+      });
+  }, [coinstatus]);
+
+  useEffect(() => {
+    getCoinInfo();
+    changeMyasset(money);
+  }, [getCoinInfo, money, sell, buy]);
+
+  const buyAct = () => {
+    fetch(`${KwangHoon}/exchange/trade/buy`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
+      },
+      body: JSON.stringify({
+        item: coinstatus + 1,
+        amount: Number(amount).toFixed(4),
+        price: Number(removeComma(price))
+      })
+    })
+      .then(sell(sellToggle))
+      .then(changeMyasset(money));
+  };
+
+  const sellAct = () => {
+    fetch(`${KwangHoon}/exchange/trade/sell`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
+      },
+      body: JSON.stringify({
+        item: coinstatus === null ? 0 : coinstatus + 1,
+        amount: parseInt(removeComma(String(amount))),
+        price: parseInt(removeComma(String(price)))
+      })
+    })
+      .then(buy(buyToggle))
+      .then(changeMyasset(money));
+  };
+
+  const amountDivide = num => {
+    console.log(asset, price);
+    if (num === 1) {
+      setAmount((Number(money) / Number(price)) * 0.1);
+    } else if (num === 2) {
+      setAmount((Number(money) / Number(price)) * 0.25);
+    } else if (num === 3) {
+      setAmount((Number(money) / Number(price)) * 0.5);
+    } else {
+      setAmount(Number(money) / Number(price));
+    }
+  };
 
   return (
     <Wrapper>
@@ -48,20 +133,21 @@ const Buyandsell = () => {
         <Possetion>
           <Left>보유</Left>
           <Right>
-            0.0000 <Currency>BTC</Currency>
+            {select === 1 ? Math.floor(money).toLocaleString() : "0.0000"}
+            <Currency>{select === 1 ? "KRW" : coinInfo.code}</Currency>
           </Right>
         </Possetion>
         <Possible>
-          <Left>매도 가능</Left>
+          <Left>{select === 1 ? "매수 가능" : "매도 가능"}</Left>
           <Right>
-            0.0000 <Currency>BTC</Currency>
+            {select === 1 ? Math.floor(money).toLocaleString() : "0.0000"}
+            <Currency>{select === 1 ? "KRW" : coinInfo.code}</Currency>
           </Right>
         </Possible>
         <PriceTotal status={pricefocus}>
           <PriceWrapper htmlfor="price">
             <Price>가격(KRW)</Price>
             <PriceBtn
-              type="text"
               name="price"
               onFocus={() => {
                 setPricefocus(true);
@@ -69,24 +155,34 @@ const Buyandsell = () => {
               onBlur={() => {
                 setPricefocus(false);
               }}
-              value={numberFormat(String(price))}
+              value={numberFormat(String(price)).toLocaleString()}
               onChange={e => {
                 setPrice(e.target.value);
               }}
+              ref={valueUp}
             />
           </PriceWrapper>
 
           <BtnWrapper>
             <PriceBtnLeft
               onClick={() => {
-                setPrice(removeComma(String(price)) + 1000);
+                console.log(price);
+                setPrice(
+                  Number(removeComma(String(price))) +
+                    Number(coinInfo.price_unit)
+                );
               }}
             >
               <FontAwesomeIcon style={{ width: "10px" }} icon={faPlus} />
             </PriceBtnLeft>
             <PriceBtnRight
               onClick={() => {
-                setPrice(removeComma(String(price)) - 1000);
+                console.log(price);
+
+                setPrice(
+                  Number(removeComma(String(price))) -
+                    Number(coinInfo.price_unit)
+                );
               }}
             >
               <FontAwesomeIcon style={{ width: "10px" }} icon={faMinus} />
@@ -95,7 +191,7 @@ const Buyandsell = () => {
         </PriceTotal>
         <AmBtnTotal status={amountfocus}>
           <AmBtnWrapper htmlfor="amount">
-            <Amount>수량(BTC)</Amount>
+            <Amount>수량({coinInfo.code})</Amount>
             <AmountBtn
               name="amount"
               onFocus={() => {
@@ -104,7 +200,7 @@ const Buyandsell = () => {
               onBlur={() => {
                 setAmountfocus(false);
               }}
-              value={numberFormat(String(amount))}
+              value={Number(amount).toFixed(4)}
               onChange={e => {
                 setAmount(e.target.value);
               }}
@@ -114,7 +210,7 @@ const Buyandsell = () => {
             <UpdownBtn
               one
               onClick={() => {
-                setAmount(removeComma(String(amount)) + 1000);
+                setAmount(Number(amount) + Number(coinInfo.amount_unit));
               }}
             >
               <FontAwesomeIcon
@@ -125,7 +221,7 @@ const Buyandsell = () => {
             </UpdownBtn>
             <UpdownBtn
               onClick={() => {
-                setAmount(removeComma(String(amount)) - 1000);
+                setAmount(Number(amount) - Number(coinInfo.amount_unit));
               }}
             >
               <FontAwesomeIcon
@@ -137,24 +233,60 @@ const Buyandsell = () => {
           </BtnWrapper>
         </AmBtnTotal>
         <Percent>
-          <PercentName one>10%</PercentName>
-          <PercentName>25%</PercentName>
-          <PercentName>50%</PercentName>
-          <PercentName>100%</PercentName>
+          <PercentName
+            one
+            onClick={() => {
+              amountDivide(1);
+            }}
+          >
+            10%
+          </PercentName>
+          <PercentName
+            onClick={() => {
+              amountDivide(2);
+            }}
+          >
+            25%
+          </PercentName>
+          <PercentName
+            onClick={() => {
+              amountDivide(3);
+            }}
+          >
+            50%
+          </PercentName>
+          <PercentName
+            onClick={() => {
+              amountDivide(4);
+            }}
+          >
+            100%
+          </PercentName>
         </Percent>
         <OrderPrice>
           <Left>주문 금액</Left>
           <Right>
-            - <Currency>KRW</Currency>
+            {numberFormat(
+              String(removeComma(String(price)) * removeComma(String(amount)))
+            ).toLocaleString()}
+            <Currency>KRW</Currency>
           </Right>
         </OrderPrice>
         <OrderAmount>
-          <Left>매도 금액</Left>
+          <Left>{select === 1 ? "매수 수량" : "매도 금액"}</Left>
           <Right>
-            - <Currency>KRW</Currency>
+            {Number(amount).toFixed(4)}
+            <Currency>{coinInfo.code}</Currency>
           </Right>
         </OrderAmount>
-        <OrderBtn status={select}>{select === 1 ? "매수" : "매도"}</OrderBtn>
+        <OrderBtn
+          status={select}
+          onClick={() => {
+            select === 1 ? buyAct() : sellAct();
+          }}
+        >
+          {select === 1 ? "매수" : "매도"}
+        </OrderBtn>
         <Bottom>
           <BottomLeft>단축키</BottomLeft>
           <BottomRight>
@@ -166,8 +298,19 @@ const Buyandsell = () => {
     </Wrapper>
   );
 };
-
-export default Buyandsell;
+const mapStatetoProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin,
+    money: state.coinSelect.myasset,
+    sellData: state.setData.sellData,
+    buyData: state.setData.buyData,
+    sellToggle: state.setData.sellToggle,
+    buyToggle: state.setData.buyToggle
+  };
+};
+export default connect(mapStatetoProps, { sell, buy, changeMyasset })(
+  Buyandsell
+);
 const Wrapper = styled.div``;
 const Header = styled.div`
   flex: 0 0 40px;
@@ -215,7 +358,11 @@ const Main = styled.div`
   box-shadow: 0 3px 10px 0 rgba(66, 66, 66, 0.05);
 `;
 const Left = styled.div``;
-const Right = styled.div``;
+const Right = styled.div`
+  width: 75%;
+  overflow: hidden;
+  text-align: right;
+`;
 
 const Currency = styled.span`
   padding-left: 4px;

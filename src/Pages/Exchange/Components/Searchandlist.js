@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
-import { numberFormat } from "util/regexp";
 import { connect } from "react-redux";
+import { changeCoin } from "Redux/Actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -11,18 +11,31 @@ import {
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
 
-const Searchandlist = ({ status }) => {
+const Searchandlist = ({ status, changeCoin, coinstatus }) => {
   const [search, Setsearch] = useState("");
-  const [coinSelect, setCoinSelect] = useState(null);
   const [coin, setCoin] = useState([]);
+  const [coinInfo, setCoinInfo] = useState([]);
   const getCoin = () => {
-    fetch(`${KwangHoon}/exchange/item`, {
+    fetch(`${KwangHoon}/exchange/1`, {
       method: "GET"
     })
       .then(res => res.json())
-      .then(res => setCoin(res.data));
+      .then(res => setCoin(res.item_data));
   };
-  const selectCoinInfo = () => {};
+  useEffect(() => {
+    getCoin();
+  }, []);
+  const getCoinInfo = useCallback(() => {
+    fetch(`${KwangHoon}/exchange/${coinstatus}`)
+      .then(res => res.json())
+      .then(res => {
+        setCoinInfo(res.item_data[coinstatus === null ? 1 : coinstatus]);
+      });
+  }, [coinstatus]);
+
+  useEffect(() => {
+    getCoinInfo();
+  }, [getCoinInfo]);
 
   const mapOfCoin = item => {
     return item.map(
@@ -30,20 +43,51 @@ const Searchandlist = ({ status }) => {
         ele.name.includes(search) && (
           <Coin
             key={idx}
-            status={coinSelect}
+            status={coinstatus}
             idx={idx}
             onClick={() => {
-              setCoinSelect(idx);
-              console.log(coinSelect);
+              changeCoin(idx);
             }}
           >
             <Coinname>
               <NameTop>{ele.code}</NameTop>
               <NameBottom>{ele.name}</NameBottom>
             </Coinname>
-            <CoinPrice>{parseInt(ele.now_price).toLocaleString()}</CoinPrice>
-            <Variance>+0,79%</Variance>
-            <TradeAmount>31,902백만</TradeAmount>
+            <CoinPrice
+              select={
+                String(
+                  Math.ceil(Number(ele.now_price)) -
+                    Math.ceil(Number(ele.yesterday_max_price))
+                ).includes("-")
+                  ? 1
+                  : 0
+              }
+            >
+              {parseInt(ele.now_price).toLocaleString()}
+            </CoinPrice>
+            <Variance
+              select={
+                String(
+                  Math.ceil(Number(ele.now_price)) -
+                    Math.ceil(Number(ele.yesterday_max_price))
+                ).includes("-")
+                  ? 1
+                  : 0
+              }
+            >
+              {String(
+                Number(
+                  (ele.now_price / ele.yesterday_max_price - 1) * 100
+                ).toFixed(2)
+              )}
+              %
+            </Variance>
+            <TradeAmount>
+              {Number(
+                String(Math.ceil(Number(ele["24_trade_volume"]))).slice(0, 4)
+              ).toLocaleString()}
+              백만
+            </TradeAmount>
           </Coin>
         )
     );
@@ -108,10 +152,11 @@ const Searchandlist = ({ status }) => {
 };
 const mapStateToProps = state => {
   return {
-    status: state.ChatOption.status
+    status: state.ChatOption.status,
+    coinstatus: state.coinSelect.coin
   };
 };
-export default connect(mapStateToProps, {})(Searchandlist);
+export default connect(mapStateToProps, { changeCoin })(Searchandlist);
 const Wrapper = styled.div`
   padding: 20px 8px;
 `;
@@ -303,7 +348,7 @@ const CoinPrice = styled.div`
   text-align: right;
   align-items: center;
   position: relative;
-  color: #e12343;
+  color: ${props => (props.select === 1 ? "#1763B6" : "#EA657C")};
 `;
 
 const Variance = styled.div`
@@ -311,7 +356,7 @@ const Variance = styled.div`
   justify-content: flex-end;
   width: 68px;
   padding-right: 6px;
-  color: #e12343;
+  color: ${props => (props.select === 1 ? "#1763B6" : "#EA657C")};
 `;
 const TradeAmount = styled.div`
   flex: 1 1 auto;

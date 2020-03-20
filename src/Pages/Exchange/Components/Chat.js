@@ -16,11 +16,10 @@ import {
 
 // 웹 소켓 서버에 접속
 const socket = socketio.connect("http://localhost:3001");
-const day = new Date();
-const hour = day.getHours();
-const minutes = day.getMinutes();
 
 const Chat = props => {
+  let token = localStorage.getItem("token");
+  let nick = localStorage.getItem("nick");
   const [msg, setMsg] = useState("");
   const [res, setRes] = useState([]);
   const bottom = useRef(null);
@@ -34,10 +33,14 @@ const Chat = props => {
   }, []);
 
   const msgSend = e => {
+    const day = new Date();
+    const hour = day.getHours();
+    const minutes = day.getMinutes();
     if (e.charCode === 13) {
       if (e.target.value) {
         // 메세지 보내기
         socket.emit("send message", {
+          nickname: nick,
           message: msg,
           hour: hour,
           minutes: minutes
@@ -54,7 +57,7 @@ const Chat = props => {
     return item.map((ele, idx) => (
       <Other key={idx} status={status}>
         <Left status={status}>
-          <Username>빡기</Username>
+          <Username>{ele.nickname}</Username>
           <Comment>{ele.message}</Comment>
         </Left>
         <Right status={status}>{`${ele.hour}:${ele.minutes}`}</Right>
@@ -89,22 +92,32 @@ const Chat = props => {
           )}
         </Setting>
       </Header>
-
-      <Chatlist status={status}>{res && mapOfRes(res)}</Chatlist>
+      <Chatlist ref={bottom} status={status}>
+        {res && mapOfRes(res)}
+      </Chatlist>
       <InputWrapper status={status}>
-        <Input
-          status={status}
-          placeholder="메세지를 입력하세요. (최대200자)"
-          onKeyPress={msgSend}
-          onChange={onChange}
-          value={msg}
-        ></Input>
+        {token ? (
+          <Input
+            status={status}
+            placeholder="메세지를 입력하세요. (최대200자)"
+            onKeyPress={msgSend}
+            token={token}
+            onChange={onChange}
+            value={msg}
+          />
+        ) : (
+          <Input
+            placeholder="로그인 후 계좌를 인증하면 채팅이 가능해요"
+            readOnly
+          />
+        )}
+
         <Inputbtn
           onClick={() => {
-            !localStorage.getItem("token") && props.history.push("/login");
+            !token && props.history.push("/login");
           }}
         >
-          {localStorage.getItem("token") ? "전송" : "로그인"}
+          {token ? "전송" : "로그인"}
         </Inputbtn>
       </InputWrapper>
     </Wrapper>
@@ -220,7 +233,6 @@ const Input = styled.textarea`
   font-weight: bold;
   resize: none;
 
-  cursor: ${props => (props.local ? "input" : "not-allowed")};
   height: ${props => (props.status ? "0px" : "100%")};
   ::placeholder {
     color: #e0e0e0;

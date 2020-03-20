@@ -1,27 +1,80 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
 import { KwangHoon } from "config";
 import styled, { css } from "styled-components";
 import { connect } from "react-redux";
+import { changeMyasset } from "Redux/Actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 
-let token = localStorage.getItem("token") || "";
-
 const Myasset = props => {
+  let token = localStorage.getItem("token");
+  const [result, setResult] = useState({});
+  const [balanceCoin, setBalanceCoin] = useState([]);
+  const { status, asset } = props;
   useEffect(() => {
-    fetch(`${KwangHoon}/account/balance`, {
-      headers: {
-        Authorization: localStorage.getItem("token")
-      }
-    }).then(res => console.log(res));
-  }, []);
+    const refresh = setInterval(() => {
+      fetch(`${KwangHoon}/account/balance`, {
+        headers: {
+          Authorization:
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          props.changeMyasset(res.total_asset.currency_balance);
+          setResult(res.total_asset);
+          setBalanceCoin(res.balance);
+        });
+    }, [1000]);
+    return () => {
+      clearInterval(refresh);
+    };
+  }, [props]);
 
-  const mapOfItems = () => {};
-  const { status } = props;
+  const mapOfItem = item => {
+    return item.map((ele, idx) => (
+      <>
+        <List key={idx}>
+          <MainList>
+            <Main one>{ele.name}</Main>
+            <Main two>
+              <Span two lefttop>
+                {Number(ele.amount)
+                  .toFixed(4)
+                  .toLocaleString()}
+              </Span>
+              <Span two bottomleft>
+                {Math.ceil(Number(ele.now_price)).toLocaleString()}원
+              </Span>
+            </Main>
+            <Main three>
+              <Span
+                three
+                righttop
+                select={String(ele.change_rate).includes("-") ? 1 : 0}
+              >
+                {(Number(ele.change_rate) * 100).toFixed(2)}%
+              </Span>
+              <Span
+                three
+                bottomright
+                select={
+                  String(Number(ele.change_price) * 100).includes("-") ? 1 : 0
+                }
+              >
+                {Math.ceil(Number(ele.change_price)).toLocaleString()}원
+              </Span>
+            </Main>
+          </MainList>
+        </List>
+      </>
+    ));
+  };
+
   return (
     <Wrapper status={localStorage.getItem("token")}>
-      {localStorage.getItem("token") ? (
+      {token ? (
         <>
           <Header>
             <Left>자산 평가금액</Left>
@@ -33,8 +86,8 @@ const Myasset = props => {
               color="#71A9FB"
               style={{ backgroundColor: "#e7f1fe" }}
             />
-            <Text>2,080원</Text>
-            <Text two>-42.85%</Text>
+            <Text> {Number(Math.ceil(asset)).toLocaleString()}원</Text>
+            <Text two>+{Number(result.total_change_rate).toFixed(2)}%</Text>
           </Price>
           <ListWrapper status={status}>
             <ListHeader>
@@ -42,26 +95,7 @@ const Myasset = props => {
               <Name two>보유 수량</Name>
               <Name three>수익률</Name>
             </ListHeader>
-            <List></List>
-            <MainList>
-              <Main one>VANTA</Main>
-              <Main two>
-                <Span two lefttop>
-                  9,990,0000
-                </Span>
-                <Span two bottomleft>
-                  1,198원
-                </Span>
-              </Main>
-              <Main three>
-                <Span three righttop>
-                  -42.85%
-                </Span>
-                <Span three bottomright>
-                  899원
-                </Span>
-              </Main>
-            </MainList>
+            {mapOfItem(balanceCoin)}
           </ListWrapper>
         </>
       ) : (
@@ -80,9 +114,9 @@ const Myasset = props => {
   );
 };
 const mapStateToProps = state => {
-  return { status: state.ChatOption.status };
+  return { status: state.ChatOption.status, asset: state.coinSelect.myasset };
 };
-export default withRouter(connect(mapStateToProps, {})(Myasset));
+export default withRouter(connect(mapStateToProps, { changeMyasset })(Myasset));
 
 const Wrapper = styled.div`
   padding: 20px 15px;
@@ -211,13 +245,13 @@ const Span = styled.span`
   display: block;
   text-align: end;
   font-size: ${props => (props.lefttop || props.righttop ? "15px" : "12px")};
-  color: ${props => {
-    if (props.bottomleft) return "#C8C8C8";
-    else if (props.bottomright) return "#9BBCE0";
-    else if (props.lefttop) return "black";
-    else if (props.righttop) return "#3B7BC1";
-  }};
-  margin-bottom: ${props => (props.lefttop || props.righttop) && "5px"};
+  margin-bottom: ${props => props.lefttop && props.righttop && "5px"};
+  color: ${props =>
+    props.select === 1 && (props.righttop || props.bottomright)
+      ? "#9BBCE0"
+      : "#EA657C"};
+  color: ${props => props.lefttop && "black"};
+  color: ${props => props.bottomleft && "gray"};
 `;
 
 const LoginCheckText = styled.div`

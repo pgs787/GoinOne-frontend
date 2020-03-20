@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled, { css, keyframes } from "styled-components";
+import { KwangHoon } from "config";
+import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-regular-svg-icons";
 
-const Tradehistory = () => {
+const Tradehistory = ({ coinstatus }) => {
   const [select, setSelect] = useState(1);
   const [allcoin, setAllcoin] = useState(false);
+  const [coinInfo, setCoinInfo] = useState("");
+  const [allcoinInfo, setAllcoinInfo] = useState([]);
+  const getCoinInfo = useCallback(() => {
+    fetch(`${KwangHoon}/exchange/1`)
+      .then(res => res.json())
+      .then(res =>
+        setCoinInfo(res.item_data[coinstatus === null ? 0 : coinstatus])
+      );
+  }, [coinstatus]);
+
+  useEffect(() => {
+    getCoinInfo();
+  }, [getCoinInfo]);
+
   return (
     <Wrapper>
       <Header>
@@ -48,14 +64,18 @@ const Tradehistory = () => {
             color="#eee"
             style={{ width: "100px", height: "100px", display: "block" }}
           />
-          <Text>{!allcoin && "BTC"} 미체결 주문 없음</Text>
+          <Text>{allcoin ? "" : coinInfo.code} 미체결 주문 없음</Text>
         </Bottom>
       </Main>
     </Wrapper>
   );
 };
-
-export default Tradehistory;
+const mapStateToProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin
+  };
+};
+export default connect(mapStateToProps, {})(Tradehistory);
 
 const Wrapper = styled.div``;
 const Header = styled.div`

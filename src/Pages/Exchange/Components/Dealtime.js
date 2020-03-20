@@ -1,19 +1,29 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { KwangHoon } from "config";
+import { connect } from "react-redux";
 import styled from "styled-components";
-
-const Dealtime = () => {
+const Dealtime = ({ coinstatus }) => {
   const [list, setList] = useState([]);
-  useEffect(() => {
-    fetch("http://localhost:3000/mockdata/timelist.json")
+
+  const getCoinInfo = useCallback(() => {
+    fetch(`${KwangHoon}/exchange/${coinstatus + 1}`)
       .then(res => res.json())
-      .then(res => setList(res.time));
-  }, []);
+      .then(res => {
+        setList(res.trade_data);
+      });
+  }, [coinstatus]);
+
+  useEffect(() => {
+    getCoinInfo();
+  }, [getCoinInfo]);
   const mapOfItems = useCallback(list => {
     return list.map((ele, idx) => (
       <List key={idx}>
-        <Listele title>{ele.time}</Listele>
-        <Listele number>{ele.price}</Listele>
-        <Listele amount>{ele.amount}</Listele>
+        <Listele title>
+          {ele.time.toLocaleString("en-GB", { timeZone: "UTC" }).slice(11, 19)}
+        </Listele>
+        <Listele number>{Math.ceil(ele.price).toLocaleString()}</Listele>
+        <Listele amount>{Number(ele.amount).toFixed(4)}</Listele>
       </List>
     ));
   }, []);
@@ -28,8 +38,12 @@ const Dealtime = () => {
     </Wrapper>
   );
 };
-
-export default Dealtime;
+const mapStatetoProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin
+  };
+};
+export default connect(mapStatetoProps, {})(Dealtime);
 const Wrapper = styled.div`
   height: 93%;
 `;

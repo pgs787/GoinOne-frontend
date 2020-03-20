@@ -18,7 +18,8 @@ function Routes() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/exchange/trade/:coin/krw" component={Index} />
+        <Route exact path="/exchange/trade/:coin" component={Index} />
+        <Route exact path="/" component={Index} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/signupnext" component={Signupnext} />
