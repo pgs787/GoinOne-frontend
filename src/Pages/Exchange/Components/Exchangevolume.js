@@ -3,132 +3,42 @@ import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
 import "./Exchange.scss";
-
+import ExchangeOptions from "./ChartOptions";
 highchartsMore(Highcharts);
 
 class Exchangevolume extends Component {
   constructor() {
     super();
     this.state = {
-      options: {
-        tooltip: { pointFormat: "", shared: true },
-        chart: {
-          styleMode: true,
-          zoomType: "xy",
-          height: 400,
-          width: 950,
-          marginRight: 60,
-          marginLeft: 60,
-          marginTop: 50,
-          scrollablePlotArea: {
-            scrollPositionX: 0
-          }
-        },
-        plotOptions: {
-          series: {
-            pointWidth: 5
-          }
-        },
-        title: {
-          text: ""
-        },
-        credits: {
-          enabled: false
-        },
-        xAxis: {
-          tooltip: { pointFormat: "", shared: true },
-          lineColor: "#000000",
-          lineWidth: 1,
-          type: "datetime",
-          dateTimeLabelFormats: {
-            week: "%Y. %b. %e"
-          },
-          title: {
-            text: "",
-            enabeld: false
-          }
-        },
-        yAxis: [
-          {
-            opposite: true,
-            name: "Acc Price",
-            tickAmount: 4,
-            resize: {
-              enabled: true
-            },
-            lineColor: "#000000",
-            lineWidth: 1,
-            title: {
-              enabled: false,
-              text: "Acc Price"
-            },
-            labels: { enabled: true }
-          },
-          {
-            name: "Acc Volume",
-            tickAmount: 4,
-            resize: {
-              enabled: true
-            },
-            lineColor: "#000000",
-            lineWidth: 1,
-            title: {
-              enabled: false,
-              text: "Acc Volume"
-            },
-            labels: { enabled: true }
-          }
-        ],
-        series: [
-          {
-            name: "Acc Price",
-            type: "spline",
-            data: [],
-            lineColor: "#006388",
-            tooltip: {
-              pointFormat: "",
-              valueSuffix: " 백만원"
-            }
-          },
-          {
-            name: "Acc Volume",
-            type: "column",
-            yAxis: 1, // 왼쪽에 고정시킬 축을 1 로 설정
-            data: [],
-            color: "green",
-            tooltip: {
-              valueSuffix: " 개"
-            }
-          }
-        ]
-      }
+      options: ExchangeOptions.ExchangeVolumeOptions
     };
   }
 
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch(
-        "https://crix-api-endpoint.upbit.com/v1/crix/candles/days?code=CRIX.UPBIT.KRW-BTC&count=100&"
-      )
+      fetch("http://10.58.2.33:8000/exchange/report/2/days", {
+        Method: "GET"
+      })
         .then(res => {
           console.log(res);
           return res.json();
         })
         .then(csvReceive => {
+          console.log(csvReceive);
           const AccPrice = [];
           for (let i = 99; i >= 0; i--) {
             AccPrice.push([
-              csvReceive[i].timestamp,
-              Math.floor(csvReceive[i].candleAccTradePrice / 1000000)
+              csvReceive.data[i].date * 1000,
+              Math.floor(csvReceive.data[i].candle_price / 1000000)
             ]);
           }
           //Moving Average 그릴때 i의 배열.length 조건 설정 주의!
           const AccVolume = [];
           for (let i = 99; i >= 0; i--) {
             AccVolume.push([
-              csvReceive[i].timestamp,
-              Math.floor(csvReceive[i].candleAccTradeVolume)
+              csvReceive.data[i].date * 1000,
+              Math.floor(csvReceive.data[i].candle_volume)
             ]);
           }
 

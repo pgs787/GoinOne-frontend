@@ -13,20 +13,19 @@ class Exchangechartwrap extends Component {
   constructor() {
     super();
     this.state = {
-      chartleft: true,
-      chartright: false
+      chartleft: true
     };
   }
 
   chartselectorLeft = () => {
     this.state.chartleft
-      ? this.setState({ chartleft: true, chartright: false })
-      : this.setState({ chartleft: true, chartright: false });
+      ? this.setState({ chartleft: true })
+      : this.setState({ chartleft: true });
   };
   chartselectorRight = () => {
-    this.state.chartright
-      ? this.setState({ chartleft: false, chartright: true })
-      : this.setState({ chartleft: false, chartright: true });
+    this.state.chartleft
+      ? this.setState({ chartleft: false })
+      : this.setState({ chartleft: false });
   };
 
   render() {
@@ -78,7 +77,7 @@ const Chartselectorbtn_left = styled.div`
   // border: 1px solid #9f9f9f;
   background-color: #e9e9e9;
   color: #b0afaf;
-  border-radius: 10%;
+  border-radius: 2%;
   font-size: 14px;
   font-weight: 600;
 `;
@@ -90,7 +89,7 @@ const Chartselectorbtn_left_true = styled.div`
   text-align: center;
   // border: 1px solid #9f9f9f;
   background-color: white;
-  border-radius: 10%;
+  border-radius: 2%;
   font-size: 14px;
   font-weight: 600;
 `;
@@ -103,7 +102,7 @@ const Chartselectorbtn_right = styled.div`
   // border: 1px solid #9f9f9f;
   background-color: #e9e9e9;
   color: #b0afaf;
-  border-radius: 10%;
+  border-radius: 2%;
   font-size: 14px;
   font-weight: 600;
 `;
@@ -115,7 +114,7 @@ const Chartselectorbtn_right_true = styled.div`
   text-align: center;
   // border: 1px solid #9f9f9f;
   background-color: white;
-  border-radius: 10%;
+  border-radius: 2%;
   font-size: 14px;
   font-weight: 600;
 `;

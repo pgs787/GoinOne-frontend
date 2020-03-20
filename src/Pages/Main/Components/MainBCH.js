@@ -3,19 +3,11 @@ import styled, { css } from "styled-components";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
-import MainLayout from "Components/Layout/SignupLayout";
-import magni from "Img/icon_magni.png";
-import Index from "Pages/Exchange/Index";
-import ExchangeOptions from "../Exchange/Components/ChartOptions";
-import MainBTC from "./Components/MainBTC";
-import MainBCH from "./Components/MainBCH";
-import MainETH from "./Components/MainETH";
-import MainETC from "./Components/MainETH";
-import MainXRP from "./Components/MainETH";
+import ExchangeOptions from "Pages/Exchange/Components/ChartOptions";
 
 highchartsMore(Highcharts);
 
-class Main extends Component {
+class MainBCH extends Component {
   constructor() {
     super();
     this.state = {
@@ -32,7 +24,7 @@ class Main extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/1/days", {
+      fetch("http://10.58.2.33:8000/exchange/report/4/days", {
         method: "GET"
       })
         .then(res => {
@@ -157,45 +149,50 @@ class Main extends Component {
 
   render() {
     return (
-      <MainLayout>
-        <LandingMain>
-          <FilterWarp>
-            <FilterInner>
-              <FilterUl>
-                <FilterLi>#거래량많은</FilterLi>
-                <FilterLi>#급등하는</FilterLi>
-                <FilterLi>#급락하는</FilterLi>
-                <FilterLi>#최근상장</FilterLi>
-              </FilterUl>
-              <FilterSearchBar>
-                <InputSearchWarp>
-                  <InputSearch placeholder="코인 검색"></InputSearch>
-                  <InputSearchMagni>
-                    <InputSearchImg src={magni}></InputSearchImg>
-                  </InputSearchMagni>
-                </InputSearchWarp>
-                <Volume_label>24시간 거래량(원)</Volume_label>
-                <Volume_amount>{this.state.acctradeprice}</Volume_amount>
-              </FilterSearchBar>
-            </FilterInner>
-          </FilterWarp>
-
-          <CoverArea>
-            <CoverInner>
-              <MainBTC></MainBTC>
-              <MainETH></MainETH>
-              <MainETC></MainETC>
-              <MainBCH></MainBCH>
-              <MainXRP></MainXRP>
-            </CoverInner>
-          </CoverArea>
-        </LandingMain>
-      </MainLayout>
+      <CoverArea>
+        <CoverInner>
+          <ChartMain>
+            <ChartMainCard>
+              <ChartMainCard_Left>
+                <ChartMainCard_Left_inner_div_name>
+                  {this.state.name}
+                </ChartMainCard_Left_inner_div_name>
+                <ChartMainCard_Left_inner_div>
+                  Main Market
+                </ChartMainCard_Left_inner_div>
+              </ChartMainCard_Left>
+              <ChartMainCard_Right>
+                <ChartMainCard_Right_Price>
+                  {this.state.closeprice}
+                </ChartMainCard_Right_Price>
+                <ChartMainCard_Right_PriceChange>
+                  등락률: {this.state.chgrate}
+                </ChartMainCard_Right_PriceChange>
+                <ChartMainCard_Right_AmountChange>
+                  거래대금: {this.state.acctradeprice}
+                </ChartMainCard_Right_AmountChange>
+              </ChartMainCard_Right>
+            </ChartMainCard>
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={this.state.options}
+            ></HighchartsReact>
+            <ToExchangeBtn onClick={this.toExchange}>
+              거래소 바로가기
+            </ToExchangeBtn>
+          </ChartMain>
+          <TableMainWrap_div>
+            <ToExchangeBtn onClick={this.toExchange}>
+              코인 더 보러가기 >
+            </ToExchangeBtn>
+          </TableMainWrap_div>
+        </CoverInner>
+      </CoverArea>
     );
   }
 }
 
-export default Main;
+export default MainBCH;
 
 const LandingMain = styled.div`
   height: 600px;
@@ -297,9 +294,9 @@ const Volume_amount = styled.span`
 const CoverArea = styled.div`
   width: 1903px;
   height: 520px;
-  border-top: 1px solid rgba(232, 232, 232, 1);
-  padding-top: 40px;
-  margin-top: 25px;
+  // border-top: 1px solid rgba(232, 232, 232, 1);
+  padding-top: 20px;
+  margin-top: 5px;
 `;
 
 const CoverInner = styled.div`
