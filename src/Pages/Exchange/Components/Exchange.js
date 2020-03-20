@@ -20,7 +20,7 @@ class Exchange extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(() => {
-      fetch(`${KwangHoon}/exchange/report/${this.props.coinstatus}/days`, {
+      fetch(`${KwangHoon}/exchange/report/1/days`, {
         Method: "GET"
       })
         .then(res => {
