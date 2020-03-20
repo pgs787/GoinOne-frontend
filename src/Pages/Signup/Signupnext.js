@@ -47,6 +47,13 @@ const Signupnext = props => {
     }
   };
   useEffect(() => {
+    const location = document.documentElement.offsetTop;
+    window.scrollTo({ top: location });
+    return () => {
+      window.scrollTo({ top: location });
+    };
+  }, []);
+  useEffect(() => {
     if (upper_case.test(pwd)) {
       setUpper(true);
     } else {

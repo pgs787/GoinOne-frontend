@@ -3,15 +3,13 @@ import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
 import main from "Img/coinone_logo_blue.svg";
 import loud from "Img/icon.png";
+import swal from "sweetalert";
 
 const categoryData = ["거래소", "프로차트", "자산", "코인정보", "플러스"];
 
+let token = localStorage.getItem("token");
 const Header = props => {
   const [selectcategory, setSelectcategory] = useState(null);
-  const [token, setToken] = useState(null);
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
 
   const onChange = num => {
     setSelectcategory(num);
@@ -97,10 +95,14 @@ const Header = props => {
               <Icon src={loud} alt="icon" />
             </MainRightIconWrapper>
             <TextBoxWrapper>
-              <TextBox>
-                <Link to="/signup">
-                  <TextWord>회원가입</TextWord>
-                </Link>
+              <TextBox
+                onClick={() => {
+                  token
+                    ? swal("", "로그 아웃을 먼저 해 주세요", "warning")
+                    : props.history.push("/signup");
+                }}
+              >
+                <TextWord>회원가입</TextWord>
               </TextBox>
               <TextBox onClick={token && handlLogOut}>
                 <Link to={!token ? "/login" : ""}>

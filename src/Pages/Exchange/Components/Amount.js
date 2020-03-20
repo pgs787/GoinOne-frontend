@@ -1,4 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { KwangHoon } from "config";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { changesell, changebuy } from "Redux/Actions";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,39 +11,69 @@ import {
   faCaretDown
 } from "@fortawesome/free-solid-svg-icons";
 
-const getData = () => {
-  return fetch("http://localhost:3000/mockdata/amount.json").then(res =>
-    res.json()
-  );
-};
-
-const Amount = () => {
-  const [list, setList] = useState([]);
-
+const Amount = props => {
+  const {
+    coinstatus,
+    changesell,
+    changebuy,
+    sellData,
+    buyData,
+    sellToggle,
+    buyToggle
+  } = props;
+  const getCoinInfo = useCallback(() => {
+    fetch(`${KwangHoon}/exchange/${coinstatus + 1}`)
+      .then(res => res.json())
+      .then(res => {
+        changesell(res.offer_sell_data);
+        changebuy(res.offer_buy_data);
+      });
+  }, [coinstatus, changesell, changebuy]);
   useEffect(() => {
-    getData().then(res => {
-      setList(res.time);
-    });
-  }, []);
+    const refresh = setInterval(() => {
+      getCoinInfo();
+    }, [1000]);
+    return () => {
+      clearInterval(refresh);
+    };
+  }, [getCoinInfo, sellToggle, buyToggle]);
 
-  const mapOfItem = item => {
+  const mapOfItem = (item, num) => {
     const graphlen = [];
-    for (let i = 0; i < list.length; i++) {
-      graphlen.push(list[i].price);
+
+    if (num === 1) {
+      for (let k = 0; k < sellData.length; k++) {
+        graphlen.push(parseFloat(item[k].amount));
+      }
+    } else {
+      for (let i = 0; i < buyData.length; i++) {
+        graphlen.push(parseFloat(item[i].amount));
+      }
     }
     const result = Math.max.apply(null, graphlen);
-    return item.map((ele, idx) => (
-      <Main key={idx}>
-        <Graph>
-          <Action max={result} rate={(parseInt(ele.price) / result) * 100} />
-        </Graph>
-        <Col1>{ele.time}</Col1>
-        <Col2 status={ele.price}>{ele.price}</Col2>
-        <Col3>{ele.amount}</Col3>
-      </Main>
-    ));
+
+    return item.map(
+      (ele, idx) =>
+        ele.amount !== 0 && (
+          <Main key={idx}>
+            <Graph>
+              <Action
+                num={num}
+                max={result}
+                rate={(ele.amount / result) * 100}
+              />
+            </Graph>
+            <Col1 num={num}>{Math.floor(ele.price).toLocaleString()}</Col1>
+            <Col2 num={num} status={parseFloat(ele.price)}>
+              {parseFloat(ele.amount).toFixed(4)}
+            </Col2>
+            <Col3 num={num}>{}</Col3>
+          </Main>
+        )
+    );
   };
 
+  console.log(sellToggle);
   return (
     <Wrapper>
       <Header>
@@ -77,12 +111,25 @@ const Amount = () => {
           </Content>
         </Name>
       </Header>
-      <ListWrapper>{list && mapOfItem(list)}</ListWrapper>
+      <ListWrapper>
+        {sellData && mapOfItem(sellData, 1)}
+        {buyData && mapOfItem(buyData, 2)}
+      </ListWrapper>
     </Wrapper>
   );
 };
-
-export default Amount;
+const mapStatetoProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin,
+    sellData: state.setData.sellData,
+    buyData: state.setData.buyData,
+    sellToggle: state.setData.sellToggle,
+    buyToggle: state.setData.buyToggle
+  };
+};
+export default withRouter(
+  connect(mapStatetoProps, { changesell, changebuy })(Amount)
+);
 
 const Wrapper = styled.div`
   height: 41px;
@@ -153,16 +200,15 @@ const Graph = styled.div`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-
   width: 100%;
   height: 21px;
+  cursor: pointer;
 `;
 const Action = styled.div`
   width: ${props => props.rate && `${props.rate}%`};
-  background-color: #e7eff8;
+  background-color: ${props => (props.num === 1 ? "#e7eff8" : "#FCE9EC")};
   height: 100%;
 `;
-
 const col = css`
   display: flex;
   align-items: center;
@@ -172,17 +218,18 @@ const col = css`
 `;
 const Col1 = styled.div`
   ${col};
-  color: #1763b6;
+  color: ${props => (props.num === 1 ? "#1763b6" : "#E64460")};
   flex: 0 0 auto;
   width: 102px;
   font-weight: 700;
-  background-color: #f7fbff;
+  background-color: ${props => (props.num === 1 ? "#f7fbff" : "#FFF7F9")};
+  cursor: pointer;
 `;
 
 const Col2 = styled.div`
   ${col};
   z-index: 1;
-  color: red;
+  color: ${props => (props.num === 1 ? "#1763b6" : "#E64460")};
   flex: 0 0 auto;
   justify-content: flex-end;
   width: 80px;

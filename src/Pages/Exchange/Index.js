@@ -13,7 +13,7 @@ import Searchandlist from "./Components/Searchandlist";
 import Aseetlist from "./Components/Myasset";
 import Exchangechartwrap from "./Components/Exchangechartwrap";
 
-const Index = ({ status }) => {
+const Index = ({ status, coinstatus }) => {
   return (
     <ExchangeLayout exchange={true}>
       <Inner>
@@ -56,7 +56,7 @@ const Index = ({ status }) => {
   );
 };
 const mapStateToProps = state => {
-  return { status: state.ChatOption.status };
+  return { status: state.ChatOption.status, coinstatus: state.coinSelect.coin };
 };
 
 export default connect(mapStateToProps, {})(Index);

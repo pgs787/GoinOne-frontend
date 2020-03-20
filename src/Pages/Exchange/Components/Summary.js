@@ -1,30 +1,91 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { KwangHoon } from "config";
 import styled from "styled-components";
+import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import { faCaretUp, faCaretDown } from "@fortawesome/free-solid-svg-icons";
 
-const Summary = () => {
-  const [coin, setCoin] = useState([]);
-  // useEffect(() => {
-  //   fetch("http://localhost:3000/mockdata/coin.json")
-  //     .then(res => res.json())
-  //     .then(res => setCoin(res.coin));
-  // }, []);
+const Summary = ({ coinstatus }) => {
+  const [coinInfo, setCoinInfo] = useState([]);
+
+  const getCoinInfo = useCallback(() => {
+    fetch(`${KwangHoon}/exchange/1`)
+      .then(res => res.json())
+      .then(res =>
+        setCoinInfo(res.item_data[coinstatus === null ? 0 : coinstatus])
+      );
+  }, [coinstatus]);
+
+  useEffect(() => {
+    getCoinInfo();
+  }, [getCoinInfo]);
+
   return (
     <SummarWrpper>
       <Coinname>
-        <En>BTC</En>
-        <Kr>비트코인</Kr>
+        <En>{coinInfo.code}</En>
+        <Kr>{coinInfo.name}</Kr>
         <Marketname>Main 마켓</Marketname>
       </Coinname>
       <Price>
-        <Upper>7,137,000</Upper>
-        <Percent>+12.23%</Percent>
-        <Arrow>
+        <Upper
+          select={
+            String(
+              Math.ceil(Number(coinInfo.now_price)) -
+                Math.ceil(Number(coinInfo.yesterday_max_price))
+            ).includes("-")
+              ? 1
+              : 0
+          }
+        >
+          {parseInt(coinInfo.now_price).toLocaleString()}
+        </Upper>
+        <Percent
+          select={
+            String(
+              Math.ceil(Number(coinInfo.now_price)) -
+                Math.ceil(Number(coinInfo.yesterday_max_price))
+            ).includes("-")
+              ? 1
+              : 0
+          }
+        >
+          {String(
+            Number(
+              (coinInfo.now_price / coinInfo.yesterday_max_price - 1) * 100
+            ).toFixed(2)
+          )}
+          %
+        </Percent>
+        <Arrow
+          select={
+            String(
+              Math.ceil(Number(coinInfo.now_price)) -
+                Math.ceil(Number(coinInfo.yesterday_max_price))
+            ).includes("-")
+              ? 1
+              : 0
+          }
+        >
           (
-          <FontAwesomeIcon icon={faCaretUp} color="red" size="lg" />
-          &nbsp; 777,000)
+          <FontAwesomeIcon
+            icon={
+              String(
+                Math.ceil(Number(coinInfo.now_price)) -
+                  Math.ceil(Number(coinInfo.yesterday_max_price))
+              ).includes("-")
+                ? faCaretDown
+                : faCaretUp
+            }
+            size="lg"
+          />
+          &nbsp;
+          {Number(
+            Math.ceil(Number(coinInfo.now_price)) -
+              Math.ceil(Number(coinInfo.yesterday_max_price))
+          ).toLocaleString()}
+          )
         </Arrow>
       </Price>
       <Detailinfo>
@@ -34,20 +95,34 @@ const Summary = () => {
           style={{ marginRight: "13px", cursor: "pointer" }}
         />
         <Bar /> 고가&nbsp;
-        <Highprice>7,390,000</Highprice>
+        <Highprice>
+          {Math.floor(Number(coinInfo.today_max_price)).toLocaleString()}
+        </Highprice>
         저가&nbsp;
-        <Lowprice>5,493,000</Lowprice>
+        <Lowprice>
+          {Math.floor(Number(coinInfo.today_min_price)).toLocaleString()}
+        </Lowprice>
         전일가&nbsp;
-        <Yesterday>6,359,000</Yesterday>
+        <Yesterday>
+          {Math.floor(Number(coinInfo.yesterday_max_price)).toLocaleString()}
+        </Yesterday>
         거래량&nbsp;
-        <Tradeamount>23,628</Tradeamount>BTC&nbsp;&nbsp; 거래대금&nbsp;
-        <Total>170,205,943,223</Total>
+        <Tradeamount>
+          {Math.floor(Number(coinInfo["24_trade_volume"])).toLocaleString()}
+        </Tradeamount>
+        BTC&nbsp;&nbsp; 거래대금&nbsp;
+        <Total>{parseInt(coinInfo["24_trade_volume"]).toLocaleString()}</Total>
         KRW
       </Detailinfo>
     </SummarWrpper>
   );
 };
-export default Summary;
+const mapStatetoProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin
+  };
+};
+export default connect(mapStatetoProps, {})(Summary);
 
 const SummarWrpper = styled.div`
   font-size: 15px;
@@ -78,16 +153,19 @@ const Upper = styled.span`
   font-weight: bold;
   margin-right: 5px;
   vertical-align: top;
+  color: ${props => (props.select === 1 ? "#1763b6" : "#e12343")};
 `;
 const Percent = styled.span`
   font-size: 15px;
   vertical-align: top;
   margin-right: 5px;
+  color: ${props => (props.select === 1 ? "#1763b6" : "#e12343")};
 `;
 const Arrow = styled.span`
   font-size: 15px;
   vertical-align: top;
   margin-right: 5px;
+  color: ${props => (props.select === 1 ? "#1763b6" : "#e12343")};
 `;
 const Icon = styled.div`
   display: block;
