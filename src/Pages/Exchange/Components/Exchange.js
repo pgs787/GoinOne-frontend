@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import Highcharts from "highcharts/highstock";
+import { KwangHoon } from "config";
+import { connect } from "react-redux";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
 import "./Exchange.scss";
@@ -8,8 +10,8 @@ import ExchangeOptions from "./ChartOptions";
 highchartsMore(Highcharts);
 
 class Exchange extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       options: ExchangeOptions.ExchangeOptions
     };
@@ -17,8 +19,8 @@ class Exchange extends Component {
 
   componentDidMount() {
     const component = this;
-    this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/1/days", {
+    this.interval = setInterval(() => {
+      fetch(`${KwangHoon}/exchange/report/${this.props.coinstatus}/days`, {
         Method: "GET"
       })
         .then(res => {
@@ -31,7 +33,7 @@ class Exchange extends Component {
           const CandleStick = [];
           for (let i = 99; i >= 0; i--) {
             CandleStick.push([
-              csvReceive.data[i].date * 1000,
+              csvReceive.data && csvReceive.data[i].date * 1000,
               parseInt(csvReceive.data[i].opening_price),
               parseInt(csvReceive.data[i].high_price),
               parseInt(csvReceive.data[i].low_price),
@@ -119,4 +121,9 @@ class Exchange extends Component {
   }
 }
 
-export default Exchange;
+const mapStateToProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin
+  };
+};
+export default connect(mapStateToProps, {})(Exchange);

@@ -25,6 +25,6 @@ const Main = styled.div`
 `;
 
 const Signupbox = styled.div`
-  // margin: 0 auto;
+  margin: 0 auto;
   max-width: 480px;
 `;

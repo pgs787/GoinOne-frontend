@@ -4,7 +4,7 @@ import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
 import styled, { css } from "styled-components";
 import "./Exchange.scss";
-import MyassetLayout from "Components/Layout/SignupLayout";
+import MyassetLayout from "Components/Layout/MainLayout";
 highchartsMore(Highcharts);
 
 class Myassetprofitloss extends Component {
@@ -22,11 +22,11 @@ class Myassetprofitloss extends Component {
   }
 
   componentDidMount() {
+    let token = localStorage.getItem("token");
     fetch("http://10.58.2.33:8000/account/balance", {
       Method: "GET",
       headers: {
-        Authorization:
-          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
+        Authorization: token
       }
     })
       .then(res => {
@@ -228,7 +228,6 @@ const AssetPLwrap = styled.div`
   padding-top: 16px;
   width: 1280px;
   height: 702px;
-  margin: 0 auto;
   display: flex;
   flex-direction: row;
 `;

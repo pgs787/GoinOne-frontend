@@ -7,8 +7,8 @@ import swal from "sweetalert";
 
 const categoryData = ["거래소", "프로차트", "자산", "코인정보", "플러스"];
 
-let token = localStorage.getItem("token");
 const Header = props => {
+  let token = localStorage.getItem("token");
   const [selectcategory, setSelectcategory] = useState(null);
 
   const onChange = num => {
@@ -58,7 +58,13 @@ const Header = props => {
                       onChange(2);
                     }}
                   >
-                    <CategoryContent>수익현황</CategoryContent>
+                    <CategoryContent
+                      onClick={() => {
+                        props.history.push("/myassetprofitloss");
+                      }}
+                    >
+                      수익현황
+                    </CategoryContent>
                     <CategoryContent>입출금</CategoryContent>
                     <CategoryContent>거래기록</CategoryContent>
                   </CategoryList>

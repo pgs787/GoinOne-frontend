@@ -18,7 +18,7 @@ const Dealtime = ({ coinstatus }) => {
   }, [getCoinInfo]);
   const mapOfItems = useCallback(list => {
     return list.map((ele, idx) => (
-      <List key={idx}>
+      <List buy={ele.is_buy} key={idx}>
         <Listele title>
           {ele.time.toLocaleString("en-GB", { timeZone: "UTC" }).slice(11, 19)}
         </Listele>
@@ -65,16 +65,15 @@ const List = styled.div`
   margin: 0 auto;
   font-size: 15px;
   width: 90%;
-  background-color: #f7fbff;
-  background-color: #f4f4f4;
-  color: red;
+  background-color: ${props => (props.buy ? "#FFF7F9" : "#f4f4f4")};
+  color: black;
 `;
 const Listele = styled.div`
   padding: 5px 5px;
   padding-right: ${props => (props.amount || props.number) && "0"};
   width: 83px;
   font-size: ${props => props.title && "14px"};
-  color: ${props => (props.amount || props.number ? "red" : "black")};
+  color: black;
   text-align: end;
 `;
 

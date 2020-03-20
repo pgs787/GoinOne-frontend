@@ -181,63 +181,6 @@ class MainXRP extends Component {
               거래소 바로가기
             </ToExchangeBtn>
           </ChartMain>
-          <TableMainWrap_div>
-            <TableMain_table>
-              <TableMain_tr>
-                <TableMain_th1>최근24시간 기준</TableMain_th1>
-                <TableMain_th>현재가</TableMain_th>
-                <TableMain_th>등락률</TableMain_th>
-                <TableMain_th>거래대금</TableMain_th>
-                <TableMain_th>거래수량</TableMain_th>
-              </TableMain_tr>
-              <TableMain_tr>
-                <TableMain_td1_left>{this.state.name}</TableMain_td1_left>
-                <TableMain_td_right_red>
-                  {this.state.closeprice}
-                </TableMain_td_right_red>
-                <TableMain_td_right_red>
-                  {this.state.chgrate}
-                </TableMain_td_right_red>
-                <TableMain_td_right>
-                  {this.state.acctradeprice}
-                </TableMain_td_right>
-                <TableMain_td_right>
-                  {this.state.acctradevolume}
-                </TableMain_td_right>
-              </TableMain_tr>
-              <TableMain_tr>
-                <TableMain_td1_left>
-                  <TableMain_td1_span>ETH</TableMain_td1_span>
-                </TableMain_td1_left>
-                <TableMain_td_right>157,450</TableMain_td_right>
-                <TableMain_td_right>-13.5%</TableMain_td_right>
-                <TableMain_td_right>거래대금</TableMain_td_right>
-                <TableMain_td_right></TableMain_td_right>
-              </TableMain_tr>
-              <TableMain_tr>
-                <TableMain_td1_left>
-                  <TableMain_td1_span>XRP</TableMain_td1_span>
-                </TableMain_td1_left>
-                <TableMain_td_right>159</TableMain_td_right>
-                <TableMain_td_right>-13.5%</TableMain_td_right>
-
-                <TableMain_td_right>거래대금</TableMain_td_right>
-                <TableMain_td_right></TableMain_td_right>
-              </TableMain_tr>
-              <TableMain_tr>
-                <TableMain_td1_left>
-                  <TableMain_td1_span>BCH</TableMain_td1_span>
-                </TableMain_td1_left>
-                <TableMain_td_right>216,000</TableMain_td_right>
-                <TableMain_td_right>-13.5%</TableMain_td_right>
-                <TableMain_td_right>거래대금</TableMain_td_right>
-                <TableMain_td_right></TableMain_td_right>
-              </TableMain_tr>
-            </TableMain_table>
-            <ToExchangeBtn onClick={this.toExchange}>
-              코인 더 보러가기 >
-            </ToExchangeBtn>
-          </TableMainWrap_div>
         </CoverInner>
       </CoverArea>
     );
@@ -353,7 +296,7 @@ const CoverArea = styled.div`
 
 const CoverInner = styled.div`
   margin: 0 auto;
-  width: 1024px;
+  width: 480px;
   display: flex;
   justify-content: space-around;
 `;

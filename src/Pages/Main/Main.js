@@ -3,15 +3,13 @@ import styled, { css } from "styled-components";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
-import MainLayout from "Components/Layout/SignupLayout";
+import MainLayout from "Components/Layout/MainLayout";
 import magni from "Img/icon_magni.png";
 import Index from "Pages/Exchange/Index";
 import ExchangeOptions from "../Exchange/Components/ChartOptions";
 import MainBTC from "./Components/MainBTC";
-import MainBCH from "./Components/MainBCH";
 import MainETH from "./Components/MainETH";
-import MainETC from "./Components/MainETH";
-import MainXRP from "./Components/MainETH";
+import MainETC from "./Components/MainETC";
 
 highchartsMore(Highcharts);
 
@@ -179,14 +177,11 @@ class Main extends Component {
               </FilterSearchBar>
             </FilterInner>
           </FilterWarp>
-
           <CoverArea>
             <CoverInner>
               <MainBTC></MainBTC>
               <MainETH></MainETH>
               <MainETC></MainETC>
-              <MainBCH></MainBCH>
-              <MainXRP></MainXRP>
             </CoverInner>
           </CoverArea>
         </LandingMain>
@@ -198,10 +193,9 @@ class Main extends Component {
 export default Main;
 
 const LandingMain = styled.div`
-  height: 600px;
   padding-bottom: 20px;
-  width: 1903px;
-
+  height: 700px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;

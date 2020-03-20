@@ -13,23 +13,18 @@ const Myasset = props => {
   const [balanceCoin, setBalanceCoin] = useState([]);
   const { status, asset } = props;
   useEffect(() => {
-    const refresh = setInterval(() => {
-      fetch(`${KwangHoon}/account/balance`, {
-        headers: {
-          Authorization:
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
-        }
-      })
-        .then(res => res.json())
-        .then(res => {
-          props.changeMyasset(res.total_asset.currency_balance);
-          setResult(res.total_asset);
-          setBalanceCoin(res.balance);
-        });
-    }, [1000]);
-    return () => {
-      clearInterval(refresh);
-    };
+    fetch(`${KwangHoon}/account/balance`, {
+      headers: {
+        Authorization:
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IndlY29kZTFAZ2dnLmdnZyJ9.6Q_zrgqGPOCWmkGvMfeV2ewQBYUWEOqs1LDGF5o5PCU"
+      }
+    })
+      .then(res => res.json())
+      .then(res => {
+        props.changeMyasset(res.total_asset.currency_balance);
+        setResult(res.total_asset);
+        setBalanceCoin(res.balance);
+      });
   }, [props]);
 
   const mapOfItem = item => {

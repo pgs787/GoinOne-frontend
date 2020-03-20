@@ -181,11 +181,6 @@ class MainBCH extends Component {
               거래소 바로가기
             </ToExchangeBtn>
           </ChartMain>
-          <TableMainWrap_div>
-            <ToExchangeBtn onClick={this.toExchange}>
-              코인 더 보러가기 >
-            </ToExchangeBtn>
-          </TableMainWrap_div>
         </CoverInner>
       </CoverArea>
     );
@@ -301,7 +296,7 @@ const CoverArea = styled.div`
 
 const CoverInner = styled.div`
   margin: 0 auto;
-  width: 1024px;
+  width: 480px;
   display: flex;
   justify-content: space-around;
 `;

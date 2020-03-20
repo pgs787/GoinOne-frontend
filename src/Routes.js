@@ -18,13 +18,12 @@ function Routes() {
   return (
     <Router>
       <Switch>
+        <Route exact path="/" component={Main} />
+        <Route exact path="/exchange" component={Index} />
         <Route exact path="/exchange/trade/:coin" component={Index} />
-        <Route exact path="/" component={Index} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/signupnext" component={Signupnext} />
-        <Route exact path="/exchange" component={Index} />
-        <Route exact path="/main" component={Main} />
         <Route exact path="/myassetprofitloss" component={Myassetprofitloss} />
         <Redirect to="/error" />
       </Switch>

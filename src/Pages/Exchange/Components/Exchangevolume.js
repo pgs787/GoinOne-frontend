@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
+import { KwangHoon } from "config";
+import { connect } from "react-redux";
 import "./Exchange.scss";
 import ExchangeOptions from "./ChartOptions";
 highchartsMore(Highcharts);
@@ -17,7 +19,7 @@ class Exchangevolume extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/2/days", {
+      fetch(`${KwangHoon}/exchange/report/${this.props.coinstatus}/days`, {
         Method: "GET"
       })
         .then(res => {
@@ -61,5 +63,9 @@ class Exchangevolume extends Component {
     );
   }
 }
-
-export default Exchangevolume;
+const mapStateToProps = state => {
+  return {
+    coinstatus: state.coinSelect.coin
+  };
+};
+export default connect(mapStateToProps, {})(Exchangevolume);
