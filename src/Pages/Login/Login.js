@@ -63,7 +63,7 @@ const Login = props => {
       .then(res => {
         if (res.access_token) {
           localStorage.setItem("token", res.access_token);
-          localStorage.setItem("nick", res.user_data);
+          // localStorage.setItem("nick", res.user_data);
           props.history.push("/exchange");
         } else {
           swal("", "회원정보가 일치하지 않습니다", "error");

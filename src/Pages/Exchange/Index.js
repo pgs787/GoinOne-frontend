@@ -11,7 +11,7 @@ import Tradehistory from "./Components/Tradehistory";
 import Chat from "./Components/Chat";
 import Searchandlist from "./Components/Searchandlist";
 import Aseetlist from "./Components/Myasset";
-import Exchangechartwrap from "./Components/Exchangechartwrap";
+// import Exchangechartwrap from "./Components/Exchangechartwrap";
 
 const Index = ({ status, coinstatus }) => {
   return (
@@ -21,9 +21,7 @@ const Index = ({ status, coinstatus }) => {
           <SummaryWrapper>
             <Summary />
           </SummaryWrapper>
-          <Graph>
-            <Exchangechartwrap></Exchangechartwrap>
-          </Graph>
+          <Graph>{/* <Exchangechartwrap></Exchangechartwrap> */}</Graph>
           <Boxgroup>
             <Dealtime>
               <Time />
