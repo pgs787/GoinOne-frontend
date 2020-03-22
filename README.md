@@ -17,7 +17,7 @@
 
 ### 데모 영상(이미지 클릭)
 
-// [![위타일 미리보기](http://img.youtube.com/vi/Wd_x8jr5elM/0.jpg)](https://youtu.be/Wd_x8jr5elM)
+/* [![위타일 미리보기](http://img.youtube.com/vi/Wd_x8jr5elM/0.jpg)](https://youtu.be/Wd_x8jr5elM) */
 업로드 예정
 
 
@@ -27,7 +27,7 @@
 
 ### 적용 기술
 
-> - Front-End : React.js, Style component, highcharts, socket IO(express), React hooks, React Redux
+> - Front-End : React, hooks, Redux, Styled components, highcharts, Socket IO(express), 
 > - Back-End : Python, Django web framework, Beautifulsoup, Bcrypt, My SQL, Email Authorization
 > - Common : AWS(EC2,RDS), RESTful API
 
