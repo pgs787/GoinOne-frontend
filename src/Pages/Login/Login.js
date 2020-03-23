@@ -61,8 +61,8 @@ const Login = props => {
     })
       .then(res => res.json())
       .then(res => {
-        if (res.access_token) {
-          localStorage.setItem("token", res.access_token);
+        if (res.Authorization) {
+          localStorage.setItem("token", res.Authorization);
           // localStorage.setItem("nick", res.user_data);
           props.history.push("/exchange");
         } else {
