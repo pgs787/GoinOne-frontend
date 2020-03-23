@@ -17,7 +17,9 @@
 
 ### 데모 영상(이미지 클릭)
 
-업로드 예정
+[![고인원 미리보기](http://img.youtube.com/vi/8hiypWwglsI/0.jpg)](https://youtu.be/8hiypWwglsI)
+
+[![고인원 추가자료](http://img.youtube.com/vi/Zh9Vs2ja3TM/0.jpg)](https://youtu.be/Zh9Vs2ja3TM)
 
 
 <br/>
