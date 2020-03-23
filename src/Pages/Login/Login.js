@@ -61,13 +61,9 @@ const Login = props => {
     })
       .then(res => res.json())
       .then(res => {
-        if (res.Authorization) {
-          localStorage.setItem("token", res.Authorization);
-          // localStorage.setItem("nick", res.user_data);
-          props.history.push("/exchange");
-        } else {
-          swal("", "회원정보가 일치하지 않습니다", "error");
-        }
+        localStorage.setItem("token", res.Authorization);
+        // localStorage.setItem("nick", res.user_data);
+        props.history.push("/exchange");
       });
   };
 
