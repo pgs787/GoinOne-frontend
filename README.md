@@ -1,6 +1,6 @@
 ## Goin-one 프로젝트 Front-End 소개
 
-- 거래액 전세계 47위 암호화폐 거래소, 국내 최초로 이더리움 클래식을 상장, 사이버배상책임 보험 계약을한 거래소[코인원](https://coinone.co.kr/) 클론 프로젝트
+- 거래액 전세계 47위 암호화폐 거래소, 국내 최초로 이더리움 클래식을 상장, 사이버배상책임 보험 계약을한 거래소 [코인원](https://coinone.co.kr/) 클론 프로젝트
 
 ### 개발 인원 및 기간
 
@@ -17,9 +17,8 @@
 
 ### 데모 영상(이미지 클릭)
 
-[![위타일 미리보기](http://img.youtube.com/vi/Wd_x8jr5elM/0.jpg)](https://youtu.be/Wd_x8jr5elM)
+업로드 예정
 
-[![위타일 추가자료](http://img.youtube.com/vi/2-BrM4u5q3s/0.jpg)](https://youtu.be/2-BrM4u5q3s)
 
 <br/>
 
@@ -27,7 +26,7 @@
 
 ### 적용 기술
 
-> - Front-End : React.js, Style component, highcharts, socket IO(express), React hooks, React Redux
+> - Front-End : React, hooks, Redux, Styled components, highcharts, Socket IO(express), 
 > - Back-End : Python, Django web framework, Beautifulsoup, Bcrypt, My SQL, Email Authorization
 > - Common : AWS(EC2,RDS), RESTful API
 
