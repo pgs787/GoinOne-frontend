@@ -9,17 +9,18 @@ import ExchangeOptions from "./ChartOptions";
 highchartsMore(Highcharts);
 
 class Exchangevolume extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      options: ExchangeOptions.ExchangeVolumeOptions
+      options: ExchangeOptions.ExchangeVolumeOptions,
+      coin: props.coinstatus
     };
   }
 
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch(`${KwangHoon}/exchange/report/1/days`, {
+      fetch(`${KwangHoon}/exchange/report/${this.state.coin}/days`, {
         Method: "GET"
       })
         .then(res => {

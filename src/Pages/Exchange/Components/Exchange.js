@@ -13,14 +13,15 @@ class Exchange extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      options: ExchangeOptions.ExchangeOptions
+      options: ExchangeOptions.ExchangeOptions,
+      coin: props.coinstatus
     };
   }
 
   componentDidMount() {
     const component = this;
     this.interval = setInterval(() => {
-      fetch(`${KwangHoon}/exchange/report/1/days`, {
+      fetch(`${KwangHoon}/exchange/report/${this.state.coin}/days`, {
         Method: "GET"
       })
         .then(res => {
