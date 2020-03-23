@@ -5,6 +5,7 @@ import HighchartsReact from "highcharts-react-official";
 import highchartsMore from "highcharts/highcharts-more";
 import ExchangeOptions from "Pages/Exchange/Components/ChartOptions";
 
+import { KwangHoon } from "config";
 highchartsMore(Highcharts);
 
 class MainETH extends Component {
@@ -24,7 +25,7 @@ class MainETH extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/2/days", {
+      fetch(`${KwangHoon}/exchange/report/2/days`, {
         method: "GET"
       })
         .then(res => {
