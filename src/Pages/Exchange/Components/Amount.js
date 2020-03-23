@@ -30,13 +30,8 @@ const Amount = props => {
       });
   }, [coinstatus, changesell, changebuy]);
   useEffect(() => {
-    const refresh = setInterval(() => {
-      getCoinInfo();
-    }, [1000]);
-    return () => {
-      clearInterval(refresh);
-    };
-  }, [getCoinInfo, sellToggle, buyToggle]);
+    getCoinInfo();
+  }, [getCoinInfo]);
 
   const mapOfItem = (item, num) => {
     const graphlen = [];
