@@ -62,7 +62,7 @@ const Login = props => {
       .then(res => res.json())
       .then(res => {
         localStorage.setItem("token", res.Authorization);
-        // localStorage.setItem("nick", res.user_data);
+        localStorage.setItem("nick", res.user_data);
         props.history.push("/exchange");
       });
   };
