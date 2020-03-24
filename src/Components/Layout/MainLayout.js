@@ -20,7 +20,7 @@ const MainLayout = props => {
 export default MainLayout;
 
 const Wrapper = styled.div`
-  background-color: #fafafa;
+  background-color: white;
 `;
 const Body = styled.div`
   margin-top: 68px;

@@ -23,7 +23,7 @@ class Myassetprofitloss extends Component {
 
   componentDidMount() {
     let token = localStorage.getItem("token");
-    fetch("http://10.58.2.33:8000/account/balance", {
+    fetch("http://10.58.3.246:8000/account/balance", {
       Method: "GET",
       headers: {
         Authorization: token
@@ -39,7 +39,7 @@ class Myassetprofitloss extends Component {
 
         const coinlistfilter = csvReceive.balance;
 
-        console.log(csvReceive.balance[0].amount);
+        // console.log(csvReceive.total[0].amount);
 
         for (let i = 0; i < csvReceive.balance.length; i++) {
           coinlistfilter[i].name = csvReceive.balance[i].name;
@@ -85,6 +85,7 @@ class Myassetprofitloss extends Component {
             Math.floor(parseInt(csvReceive.total_asset.item_balance))
           )
         });
+        console.log(csvReceive.total_asset.currency_balance);
       });
   }
 
@@ -93,29 +94,34 @@ class Myassetprofitloss extends Component {
   }
 
   coinlist = item => {
-    console.log(this.state.BTC);
-    return item.map((ele, idx) => (
-      <tr>
-        <TableTrTdLeft>{ele.name}</TableTrTdLeft>
-        <TableTrTdRight>
-          <p>{this.numberWithCommas(ele.amount)} 개</p>
-          <p>≈ {this.numberWithCommas(ele.now_price)} 원</p>
-        </TableTrTdRight>
-        <TableTrTdRight>
-          {this.numberWithCommas(ele.buy_price)} 원
-        </TableTrTdRight>
-        <TableTrTdRight>
-          {this.numberWithCommas(ele.change_price)} 원
-        </TableTrTdRight>
-        <TableTrTdRight>
-          {this.numberWithCommas(ele.change_rate)} %
-        </TableTrTdRight>
-        <TableTrTdRight>
-          {this.numberWithCommas(ele.avg_buy_price)} 원
-        </TableTrTdRight>
-      </tr>
-    ));
+    console.log(item);
+    // console.log(this.state.BTC);
+    return (
+      item.name &&
+      item.map((ele, idx) => (
+        <tr>
+          <TableTrTdLeft>{ele.name}</TableTrTdLeft>
+          <TableTrTdRight>
+            <p>{this.numberWithCommas(ele.amount)} 개</p>
+            <p>≈ {this.numberWithCommas(ele.now_price)} 원</p>
+          </TableTrTdRight>
+          <TableTrTdRight>
+            {this.numberWithCommas(ele.buy_price)} 원
+          </TableTrTdRight>
+          <TableTrTdRight>
+            {this.numberWithCommas(ele.change_price)} 원
+          </TableTrTdRight>
+          <TableTrTdRight>
+            {this.numberWithCommas(ele.change_rate)} %
+          </TableTrTdRight>
+          <TableTrTdRight>
+            {this.numberWithCommas(ele.avg_buy_price)} 원
+          </TableTrTdRight>
+        </tr>
+      ))
+    );
   };
+
   render() {
     return (
       <>

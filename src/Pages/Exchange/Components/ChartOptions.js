@@ -52,7 +52,8 @@ const ExchangeOptions = {
       fillOpacity: 0.2,
       credits: {
         enabled: false
-      }
+      },
+      visible: false
     }
   ],
 

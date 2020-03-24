@@ -24,7 +24,7 @@ class MainBCH extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/4/days", {
+      fetch("http://10.58.3.246:8000/exchange/report/4/days", {
         method: "GET"
       })
         .then(res => {

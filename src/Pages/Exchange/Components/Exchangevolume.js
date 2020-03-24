@@ -20,7 +20,7 @@ class Exchangevolume extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch(`${KwangHoon}/exchange/report/${this.state.coin}/days`, {
+      fetch(`${KwangHoon}/exchange/report/1/days`, {
         Method: "GET"
       })
         .then(res => {
@@ -50,7 +50,7 @@ class Exchangevolume extends Component {
           CopyOptions.series[1].data = AccVolume;
           component.setState({ options: CopyOptions }); // state update
         });
-    }, 2000);
+    }, 3000);
   }
 
   render() {

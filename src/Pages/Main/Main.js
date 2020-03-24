@@ -30,7 +30,7 @@ class Main extends Component {
   componentDidMount() {
     const component = this;
     this.interval = setInterval(function() {
-      fetch("http://10.58.2.33:8000/exchange/report/1/days", {
+      fetch("http://10.58.3.246:8000/exchange/report/1/days", {
         method: "GET"
       })
         .then(res => {
@@ -179,9 +179,93 @@ class Main extends Component {
           </FilterWarp>
           <CoverArea>
             <CoverInner>
-              <MainBTC></MainBTC>
-              <MainETH></MainETH>
-              <MainETC></MainETC>
+              <ChartMain>
+                <ChartMainCard>
+                  <ChartMainCard_Left>
+                    <ChartMainCard_Left_inner_div_name>
+                      {this.state.name}
+                    </ChartMainCard_Left_inner_div_name>
+                    <ChartMainCard_Left_inner_div>
+                      Main Market
+                    </ChartMainCard_Left_inner_div>
+                  </ChartMainCard_Left>
+                  <ChartMainCard_Right>
+                    <ChartMainCard_Right_Price>
+                      {this.state.closeprice}
+                    </ChartMainCard_Right_Price>
+                    <ChartMainCard_Right_PriceChange>
+                      {this.state.chgrate} {this.state.signedchangeprice}
+                    </ChartMainCard_Right_PriceChange>
+                    <ChartMainCard_Right_AmountChange>
+                      {this.state.acctradeprice}
+                    </ChartMainCard_Right_AmountChange>
+                  </ChartMainCard_Right>
+                </ChartMainCard>
+                <HighchartsReact
+                  highcharts={Highcharts}
+                  options={this.state.options}
+                ></HighchartsReact>
+                <ToExchangeBtn onClick={this.toExchange}>
+                  거래소 바로가기
+                </ToExchangeBtn>
+              </ChartMain>
+              <TableMainWrap_div>
+                <TableMain_table>
+                  <TableMain_tr>
+                    <TableMain_th1>최근24시간 기준</TableMain_th1>
+                    <TableMain_th>현재가</TableMain_th>
+                    <TableMain_th>등락률</TableMain_th>
+                    <TableMain_th>거래대금</TableMain_th>
+                    <TableMain_th>거래수량</TableMain_th>
+                  </TableMain_tr>
+                  <TableMain_tr>
+                    <TableMain_td1_left>{this.state.name}</TableMain_td1_left>
+                    <TableMain_td_right_red>
+                      {this.state.closeprice}
+                    </TableMain_td_right_red>
+                    <TableMain_td_right_red>
+                      {this.state.chgrate}
+                    </TableMain_td_right_red>
+                    <TableMain_td_right2>
+                      {this.state.acctradeprice}
+                    </TableMain_td_right2>
+                    <TableMain_td_right2>
+                      {this.state.acctradevolume}
+                    </TableMain_td_right2>
+                  </TableMain_tr>
+                  <TableMain_tr>
+                    <TableMain_td1_left>
+                      <TableMain_td1_span>ETH</TableMain_td1_span>
+                    </TableMain_td1_left>
+                    <TableMain_td_right>157,450</TableMain_td_right>
+                    <TableMain_td_right>-13.5%</TableMain_td_right>
+                    <TableMain_td_right2>520백만</TableMain_td_right2>
+                    <TableMain_td_right2>87개</TableMain_td_right2>
+                  </TableMain_tr>
+                  <TableMain_tr>
+                    <TableMain_td1_left>
+                      <TableMain_td1_span>XRP</TableMain_td1_span>
+                    </TableMain_td1_left>
+                    <TableMain_td_right>159</TableMain_td_right>
+                    <TableMain_td_right>-10.5%</TableMain_td_right>
+
+                    <TableMain_td_right2>310백만</TableMain_td_right2>
+                    <TableMain_td_right2>62개</TableMain_td_right2>
+                  </TableMain_tr>
+                  <TableMain_tr>
+                    <TableMain_td1_left>
+                      <TableMain_td1_span>BCH</TableMain_td1_span>
+                    </TableMain_td1_left>
+                    <TableMain_td_right>216,000</TableMain_td_right>
+                    <TableMain_td_right>-23.5%</TableMain_td_right>
+                    <TableMain_td_right2>110백만</TableMain_td_right2>
+                    <TableMain_td_right2>34개</TableMain_td_right2>
+                  </TableMain_tr>
+                </TableMain_table>
+                <ToExchangeBtn onClick={this.toExchange}>
+                  코인 더 보러가기 >
+                </ToExchangeBtn>
+              </TableMainWrap_div>
             </CoverInner>
           </CoverArea>
         </LandingMain>
@@ -434,7 +518,19 @@ const TableMain_tr = styled.tr`
 const TableMain_td_right = styled.td`
   text-align: right;
   font-size: 12px;
-  color: grey;
+  color: blue;
+`;
+
+const TableMain_td_right1 = styled.td`
+  text-align: right;
+  font-size: 12px;
+  color: red;
+`;
+
+const TableMain_td_right2 = styled.td`
+  text-align: right;
+  font-size: 12px;
+  color: black;
 `;
 
 const TableMain_td_right_red = styled.td`

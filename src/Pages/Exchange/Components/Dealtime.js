@@ -19,11 +19,15 @@ const Dealtime = ({ coinstatus }) => {
   const mapOfItems = useCallback(list => {
     return list.map((ele, idx) => (
       <List buy={ele.is_buy} key={idx}>
-        <Listele title>
+        <Listele title buy={ele.is_buy}>
           {ele.time.toLocaleString("en-GB", { timeZone: "UTC" }).slice(11, 19)}
         </Listele>
-        <Listele number>{Math.ceil(ele.price).toLocaleString()}</Listele>
-        <Listele amount>{Number(ele.amount).toFixed(4)}</Listele>
+        <Listele number buy={ele.is_buy}>
+          {Math.ceil(ele.price).toLocaleString()}
+        </Listele>
+        <Listele amount buy={ele.is_buy}>
+          {Number(ele.amount).toFixed(4)}
+        </Listele>
       </List>
     ));
   }, []);
@@ -65,7 +69,8 @@ const List = styled.div`
   margin: 0 auto;
   font-size: 15px;
   width: 90%;
-  background-color: ${props => (props.buy ? "#FFF7F9" : "#f4f4f4")};
+  background-color: ${props =>
+    props.buy ? "rgb(252,233,236)" : "rgb(231,239,248)"};
   color: black;
 `;
 const Listele = styled.div`
@@ -73,7 +78,7 @@ const Listele = styled.div`
   padding-right: ${props => (props.amount || props.number) && "0"};
   width: 83px;
   font-size: ${props => props.title && "14px"};
-  color: black;
+  color: ${props => (props.buy ? "#E64460" : "#1763b6")};
   text-align: end;
 `;
 
